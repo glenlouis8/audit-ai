@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # Import the graph AND the router logic
-from audit_ai.rag.engine import app as audit_graph, route_query, run_chat_logic
+from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history
 
 app = FastAPI(
     title="AuditAI Agent API",
@@ -40,13 +40,10 @@ async def run_agent_stream(query: str, history: list = None):
     intent = route_query(query, history)
 
     if intent == "chat":
-        response = run_chat_logic(query, history)
-        answer_text = response["answer"]
-        tokens = answer_text.split(" ")
-        for token in tokens:
-            payload = json.dumps({"type": "token", "content": token + " "})
-            yield f"{payload}\n"
-        # Chat intent implies no sources
+        async for chunk in chat_chain.astream({"query": query, "history": _format_history(history)}):
+            if chunk:
+                payload = json.dumps({"type": "token", "content": chunk})
+                yield f"{payload}\n"
         payload = json.dumps({"type": "sources", "content": []})
         yield f"{payload}\n"
         return

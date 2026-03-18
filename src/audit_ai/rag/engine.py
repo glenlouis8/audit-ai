@@ -255,26 +255,26 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     return "search"
 
 
-def run_chat_logic(user_query: str, history: List[Dict[str, str]] = None):
-    """
-    Handles simple conversational queries without the full graph.
-    """
-    history = history or []
-    prompt = ChatPromptTemplate.from_messages([
-        ("system",
-            "You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.\n\n"
-            "Rules for your response:\n"
-            "1. Respond naturally to greetings and identity questions.\n"
-            "2. If the user asks about your capabilities, mention that you can perform **deep-dive audits** against organizational policies using your Agentic RAG engine.\n"
-            "3. Maintain a helpful, professional, and slightly formal tone.\n"
-            "4. Keep your response concise (1-3 sentences)."
-        ),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{query}"),
-    ])
+_chat_prompt = ChatPromptTemplate.from_messages([
+    ("system",
+        "You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.\n\n"
+        "Rules:\n"
+        "1. Respond naturally to greetings and identity questions.\n"
+        "2. If the user asks about your capabilities, mention that you can perform deep-dive audits against organizational policies using your Agentic RAG engine.\n"
+        "3. For ANY question that is not a greeting or about your identity/capabilities, respond with exactly: "
+        "'I can only assist with NIST CSF 2.0 compliance and cybersecurity audit questions. Please ask me something related to that.'\n"
+        "4. Keep responses concise (1-3 sentences)."
+    ),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{query}"),
+])
 
-    chain = prompt | llm | StrOutputParser()
-    answer = chain.invoke({"query": user_query, "history": _format_history(history)})
+chat_chain = _chat_prompt | llm | StrOutputParser()
+
+
+def run_chat_logic(user_query: str, history: List[Dict[str, str]] = None):
+    history = history or []
+    answer = chat_chain.invoke({"query": user_query, "history": _format_history(history)})
     return {"answer": answer}
 
 
