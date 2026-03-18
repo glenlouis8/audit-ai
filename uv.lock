@@ -174,10 +174,8 @@ name = "audit-ai-backend"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "datasets" },
     { name = "fastapi" },
     { name = "google-generativeai" },
-    { name = "jsonref" },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-core" },
@@ -185,22 +183,26 @@ dependencies = [
     { name = "langchain-qdrant" },
     { name = "langchain-text-splitters" },
     { name = "langgraph" },
-    { name = "pandas" },
     { name = "pydantic" },
     { name = "pypdf" },
     { name = "python-dotenv" },
     { name = "qdrant-client" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+evals = [
+    { name = "datasets" },
+    { name = "jsonref" },
+    { name = "pandas" },
     { name = "ragas" },
     { name = "tabulate" },
-    { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "datasets", specifier = ">=4.5.0" },
     { name = "fastapi" },
     { name = "google-generativeai", specifier = ">=0.8.6" },
-    { name = "jsonref", specifier = ">=1.1.0" },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-core" },
@@ -208,14 +210,20 @@ requires-dist = [
     { name = "langchain-qdrant" },
     { name = "langchain-text-splitters" },
     { name = "langgraph" },
-    { name = "pandas" },
     { name = "pydantic" },
     { name = "pypdf" },
     { name = "python-dotenv" },
     { name = "qdrant-client" },
+    { name = "uvicorn" },
+]
+
+[package.metadata.requires-dev]
+evals = [
+    { name = "datasets", specifier = ">=4.5.0" },
+    { name = "jsonref", specifier = ">=1.1.0" },
+    { name = "pandas" },
     { name = "ragas", specifier = ">=0.4.3" },
     { name = "tabulate", specifier = ">=0.9.0" },
-    { name = "uvicorn" },
 ]
 
 [[package]]

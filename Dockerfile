@@ -6,16 +6,12 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc python3-dev curl && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install uv
-RUN curl -Ls https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:$PATH"
+# Copy uv binary from official image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
+RUN uv venv /app/.venv && \
+    uv sync --frozen --no-dev
 
 # STAGE 2: Final Runtime
 FROM python:3.12-slim
@@ -24,11 +20,9 @@ WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app/src"
 
-# Copy only the application source
 COPY src/ ./src/
-
-ENV PYTHONPATH="/app/src:${PYTHONPATH}"
 
 RUN addgroup --system appgroup && adduser --system --group appuser
 USER appuser
