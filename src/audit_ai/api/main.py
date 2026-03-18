@@ -1,6 +1,5 @@
 import os
 import json
-import asyncio
 from typing import List, Optional, Dict, Any
 
 from fastapi import FastAPI, HTTPException
@@ -9,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # Import the graph AND the router logic
-from audit_ai.engine import app as audit_graph, route_query, run_chat_logic
+from audit_ai.rag.engine import app as audit_graph, route_query, run_chat_logic
 
 app = FastAPI(
     title="AuditAI Agent API",
@@ -28,25 +27,25 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     query: str
-    history: Optional[List[Dict[str, str]]] = []
+    history: Optional[List[Dict[str, str]]] = []  # [{"role": "user"/"assistant", "content": "..."}]
 
 
-async def run_agent_stream(query: str):
+async def run_agent_stream(query: str, history: list = None):
     """
     Robust Generator: Streams text and conditionally filters sources if the AI doesn't know the answer.
     """
+    history = history or []
 
     # --- 1. ROUTER (Fast Path) ---
-    intent = route_query(query)
+    intent = route_query(query, history)
 
     if intent == "chat":
-        response = run_chat_logic(query)
+        response = run_chat_logic(query, history)
         answer_text = response["answer"]
         tokens = answer_text.split(" ")
         for token in tokens:
             payload = json.dumps({"type": "token", "content": token + " "})
             yield f"{payload}\n"
-            await asyncio.sleep(0.05)
         # Chat intent implies no sources
         payload = json.dumps({"type": "sources", "content": []})
         yield f"{payload}\n"
@@ -59,7 +58,7 @@ async def run_agent_stream(query: str):
     try:
         # Stream events from the graph
         async for event in audit_graph.astream_events(
-            {"question": query}, version="v1"
+            {"question": query, "history": history}, version="v1"
         ):
             kind = event["event"]
             data = event.get("data", {})
@@ -79,8 +78,8 @@ async def run_agent_stream(query: str):
 
             # B. Capture Tokens
             if "chunk" in data:
-                # Only capture tokens from the 'generator' tag to avoid leaking grader logic ("yes"/"no")
-                if "generator" not in event.get("tags", []):
+                # Only stream tokens from the 'generate' graph node to avoid leaking grader output ("yes"/"no")
+                if event.get("metadata", {}).get("langgraph_node") != "generate":
                     continue
 
                 chunk = data["chunk"]
@@ -130,7 +129,7 @@ async def run_agent_stream(query: str):
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     return StreamingResponse(
-        run_agent_stream(request.query), media_type="application/x-ndjson"
+        run_agent_stream(request.query, request.history), media_type="application/x-ndjson"
     )
 
 
@@ -142,8 +141,6 @@ def health_check():
 if __name__ == "__main__":
     import uvicorn
 
-    if not os.getenv("GROQ_API_KEY"):
-        print("❌ Error: GROQ_API_KEY is missing!")
     if not os.getenv("GOOGLE_API_KEY"):
         print("❌ Error: GOOGLE_API_KEY is missing!")
     else:

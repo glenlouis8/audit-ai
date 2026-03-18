@@ -20,19 +20,12 @@ from ragas.metrics import (
 )
 from audit_ai.config import EVAL_JUDGE_MODEL, GOOGLE_API_KEY, EMBEDDING_MODEL
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-from dotenv import load_dotenv
 import numpy as np
 import warnings
 
-# Suppress deprecation warnings from RAGAS/Google
-warnings.filterwarnings("ignore")
-
-# Load environment variables
-load_dotenv()
-
-
-# --- PATH LOGIC (Flattened) ---
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Suppress known deprecation warnings from RAGAS/Google SDK internals only
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="ragas")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="google")
 RESULTS_FILE = os.path.join(CURRENT_DIR, "rag_results.json")
 REPORT_FILE = os.path.join(CURRENT_DIR, "ragas_report.md")
 
@@ -153,7 +146,7 @@ def run_ragas_eval():
     for k, v in averages.items():
         print(f"{k}: {v:.4f}")
 
-    df.to_csv("ragas_results.csv", index=False)
+    df.to_csv(os.path.join(CURRENT_DIR, "ragas_results.csv"), index=False)
     
     # NEW: Generate the Markdown Report
     generate_markdown_report(df, averages)

@@ -1,14 +1,15 @@
 import os
 import asyncio
-from typing import List, Literal, TypedDict
+from typing import Dict, List, Literal, TypedDict
 
 from audit_ai.config import (
-    GROQ_API_KEY, GOOGLE_API_KEY, QDRANT_URL, QDRANT_API_KEY, 
-    LLM_MODEL, EMBEDDING_MODEL, COLLECTION_NAME
+    GOOGLE_API_KEY, QDRANT_URL, QDRANT_API_KEY,
+    LLM_MODEL, EMBEDDING_MODEL, COLLECTION_NAME,
 )
 
 # --- LangChain & Qdrant Imports ---
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
@@ -27,12 +28,24 @@ class GraphState(TypedDict):
     """
     Represents the state of our graph (the "Backpack").
     """
-    question: str              # The user's original input
-    search_query: str          # The query used for retrieval (can be rewritten)
-    generation: str            # The final answer
-    documents: List[Document]  # The retrieved context chunks
-    grade: str                 # 'yes' or 'no' (Relevance check)
-    retry_count: int           # Tracks retries
+    question: str                        # The user's original input
+    search_query: str                    # The query used for retrieval (can be rewritten)
+    generation: str                      # The final answer
+    documents: List[Document]            # The retrieved context chunks
+    grade: str                           # 'yes' or 'no' (Relevance check)
+    retry_count: int                     # Tracks retries
+    history: List[Dict[str, str]]        # Conversation history [{"role": "user"/"assistant", "content": "..."}]
+
+
+def _format_history(history: List[Dict[str, str]]):
+    """Converts history dicts to LangChain message objects."""
+    messages = []
+    for msg in history:
+        if msg.get("role") == "user":
+            messages.append(HumanMessage(content=msg["content"]))
+        elif msg.get("role") == "assistant":
+            messages.append(AIMessage(content=msg["content"]))
+    return messages
 
 # =============================================================================
 # 2. INITIALIZATION
@@ -46,7 +59,7 @@ llm = ChatGoogleGenerativeAI(
 )
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model=EMBEDDING_MODEL, 
+    model=EMBEDDING_MODEL,
     google_api_key=GOOGLE_API_KEY
 )
 
@@ -90,7 +103,7 @@ def grade_documents(state: GraphState):
         "Return ONLY the word 'yes' or 'no'."
     )
 
-    chain = prompt | llm.with_config({"tags": ["grader"]}) | StrOutputParser()
+    chain = prompt | llm | StrOutputParser()
 
     score = "no"
     for doc in documents:
@@ -134,6 +147,7 @@ async def generate(state: GraphState, config: RunnableConfig):
     print("---GENERATE NODE---")
     question = state["question"]
     documents = state["documents"]
+    history = state.get("history") or []
 
     context_text = "\n\n".join(
         [
@@ -142,21 +156,24 @@ async def generate(state: GraphState, config: RunnableConfig):
         ]
     )
 
-    prompt = ChatPromptTemplate.from_template(
-        "You are a strict Compliance Auditor AI. "
-        "Answer the user's question using ONLY the context provided below. "
-        "When answering, refer to the specific document names (e.g., 'According to the NIST framework...' or 'The Acme Policy states...')."
-        "If the documents conflict, point out the difference."
-        "If the context is empty, simply state that the specific information is missing from the database."
-        "\n\nContext:\n{context}\n\n"
-        "Question: {question}\n"
-        "Answer:"
-    )
+    prompt = ChatPromptTemplate.from_messages([
+        ("system",
+            "You are a strict Compliance Auditor AI. "
+            "Answer the user's question using ONLY the context provided below. "
+            "When answering, refer to the specific document names (e.g., 'According to the NIST framework...' or 'The Acme Policy states...'). "
+            "If the documents conflict, point out the difference. "
+            "If the context is empty, simply state that the specific information is missing from the database.\n\n"
+            "Context:\n{context}"
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{question}"),
+    ])
 
-    rag_chain = prompt | llm.with_config({"tags": ["generator"]}) | StrOutputParser()
+    rag_chain = prompt | llm | StrOutputParser()
 
     response = await rag_chain.ainvoke(
-        {"context": context_text, "question": question}, config=config
+        {"context": context_text, "question": question, "history": _format_history(history)},
+        config=config,
     )
 
     return {"generation": response}
@@ -207,63 +224,80 @@ app = workflow.compile()
 # 4. PUBLIC INTERFACE (Used by API)
 # =============================================================================
 
-def route_query(user_query: str) -> Literal["chat", "search"]:
+def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Literal["chat", "search"]:
     """
-    Semantic Router: Decides if the query is a basic greeting/identity check 
+    Semantic Router: Decides if the query is a basic greeting/identity check
     or a complex compliance search requiring the graph.
     """
+    history = history or []
+    history_context = ""
+    if history:
+        recent = history[-6:]  # last 3 exchanges
+        history_context = "Previous conversation:\n" + "\n".join(
+            f"{m['role'].title()}: {m['content']}" for m in recent
+        ) + "\n\n"
+
     prompt = ChatPromptTemplate.from_template(
         "You are a router. Classify user input into one of two categories: \n"
         "1. 'chat': Greetings, identity checks, unrelated/nonsense questions (dogs, painting, sports), or general help. \n"
         "2. 'search': Specific, serious questions about NIST CSF 2.0, organizational policies, or compliance audits. \n\n"
+        "{history_context}"
         "Input: {query} \n"
         "If you are even slightly unsure if it is a compliance query, return 'chat'. \n"
         "Return ONLY one word: 'chat' or 'search'."
     )
-    
+
     chain = prompt | llm | StrOutputParser()
-    intent = chain.invoke({"query": user_query}).strip().lower()
-    
+    intent = chain.invoke({"query": user_query, "history_context": history_context}).strip().lower()
+
     if "chat" in intent:
         return "chat"
     return "search"
 
 
-def run_chat_logic(user_query: str):
+def run_chat_logic(user_query: str, history: List[Dict[str, str]] = None):
     """
     Handles simple conversational queries without the full graph.
     """
-    prompt = ChatPromptTemplate.from_template(
-        """You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.
+    history = history or []
+    prompt = ChatPromptTemplate.from_messages([
+        ("system",
+            "You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.\n\n"
+            "Rules for your response:\n"
+            "1. Respond naturally to greetings and identity questions.\n"
+            "2. If the user asks about your capabilities, mention that you can perform **deep-dive audits** against organizational policies using your Agentic RAG engine.\n"
+            "3. Maintain a helpful, professional, and slightly formal tone.\n"
+            "4. Keep your response concise (1-3 sentences)."
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{query}"),
+    ])
 
-Rules for your response:
-1. Respond naturally to greetings and identity questions.
-2. If the user asks about your capabilities, mention that you can perform **deep-dive audits** against organizational policies using your Agentic RAG engine.
-3. Maintain a helpful, professional, and slightly formal tone.
-4. Keep your response concise (1-3 sentences).
-
-User Query: {query}
-Answer:"""
-    )
-    
     chain = prompt | llm | StrOutputParser()
-    answer = chain.invoke({"query": user_query})
+    answer = chain.invoke({"query": user_query, "history": _format_history(history)})
     return {"answer": answer}
 
 
 
-def process_query(user_query: str):
+def process_query(user_query: str, history: List[Dict[str, str]] = None):
     """
     Helper function for non-streaming execution (e.g., for evals).
+    Safe to call from both sync and async contexts.
     """
-    intent = route_query(user_query)
-    
+    history = history or []
+    intent = route_query(user_query, history)
+
     if intent == "chat":
-        return run_chat_logic(user_query)
-        
-    inputs = {"question": user_query}
+        return run_chat_logic(user_query, history)
+
+    inputs = {"question": user_query, "history": history}
     try:
-        final_state = asyncio.run(app.ainvoke(inputs))
+        # Run in a new thread to avoid "event loop already running" errors
+        # when called from an async context (e.g., Jupyter, async test runners).
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(asyncio.run, app.ainvoke(inputs))
+            final_state = future.result()
         return {
             "answer": final_state["generation"],
             "context": final_state["documents"],

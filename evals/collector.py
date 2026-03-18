@@ -10,11 +10,7 @@ sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 import csv
 import json
 import time
-import pandas as pd
-from audit_ai.engine import process_query
-from dotenv import load_dotenv
-
-load_dotenv()
+from audit_ai.rag.engine import process_query
 
 
 def load_test_csv(file_path):
@@ -27,14 +23,13 @@ def load_test_csv(file_path):
         reader = csv.reader(f)
         for line in reader:
             if line:
-                # Clean prefix from the first column
-                q = line[0].replace("", "").strip('"').strip()
+                # Clean BOM and surrounding quotes from the first column
+                q = line[0].replace("\ufeff", "").strip('"').strip()
                 rows.append({"question": q, "ground_truth": line[1]})
     return rows
 
 
-# --- PATH LOGIC (Flattened) ---
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# --- PATH LOGIC ---
 TEST_FILE = os.path.join(CURRENT_DIR, "test.csv")
 RESULTS_FILE = os.path.join(CURRENT_DIR, "rag_results.json")
 
@@ -46,7 +41,7 @@ def collect_answers():
     print(f"🚀 Starting collection for {len(test_questions)} questions...")
 
     for i, item in enumerate(test_questions):
-        print(f"[{i+1}/50] Processing: {item['question'][:50]}...")
+        print(f"[{i+1}/{len(test_questions)}] Processing: {item['question'][:50]}...")
 
         # Run your actual RAG system
         response = process_query(item["question"])
@@ -62,7 +57,7 @@ def collect_answers():
             }
         )
 
-        # Prevent hitting Groq/Gemini rate limits during collection
+        # Prevent hitting Gemini rate limits during collection
         time.sleep(1)
 
     # Save to a local file

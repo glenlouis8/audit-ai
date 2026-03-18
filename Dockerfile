@@ -38,4 +38,4 @@ EXPOSE 8000
 # Command to run the application
 # We point to audit_ai.main:app because the folder structure was flattened
 ENV PYTHONPATH="/app/src:${PYTHONPATH}"
-CMD ["uvicorn", "audit_ai.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "audit_ai.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
