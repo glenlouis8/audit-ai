@@ -1,0 +1,15 @@
+frontend/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+data/
+evals/
+docs/
+ragas_results.csv
+rag_results.json
+*.log
+.git/
+.DS_Store
+CLAUDE.md
