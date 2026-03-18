@@ -68,7 +68,8 @@ export default function ChatInterface() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiUrl}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" },
+        cache: "no-store",
         body: JSON.stringify({
           query: userQuery,
           history: messages

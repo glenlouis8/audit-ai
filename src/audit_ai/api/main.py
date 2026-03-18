@@ -126,7 +126,9 @@ async def run_agent_stream(query: str, history: list = None):
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     return StreamingResponse(
-        run_agent_stream(request.query, request.history), media_type="application/x-ndjson"
+        run_agent_stream(request.query, request.history),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "X-Accel-Buffering": "no"},
     )
 
 
