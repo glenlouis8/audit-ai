@@ -57,4 +57,4 @@ coverage.xml
 *.cover
 .hypothesis/
 
-docs/CLAUDE.md
+docs/

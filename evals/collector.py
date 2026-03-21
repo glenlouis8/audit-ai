@@ -1,8 +1,8 @@
 import sys
 import os
 
-# --- PATH HACK (Industrial Standard for standalone scripts) ---
-# Adds the 'src' directory to the path so we can import 'audit_ai'
+# The evals directory is not part of the installed package, so we manually add
+# the src directory to sys.path to make the audit_ai package importable.
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
@@ -19,17 +19,16 @@ def load_test_csv(file_path):
         print(f"❌ Error: '{file_path}' not found.")
         return []
     with open(file_path, "r", encoding="utf-8") as f:
-        f.readline()  # skip header
+        f.readline()  # skip header row
         reader = csv.reader(f)
         for line in reader:
             if line:
-                # Clean BOM and surrounding quotes from the first column
+                # Strip BOM markers and surrounding quotes that some CSV editors insert.
                 q = line[0].replace("\ufeff", "").strip('"').strip()
                 rows.append({"question": q, "ground_truth": line[1]})
     return rows
 
 
-# --- PATH LOGIC ---
 TEST_FILE = os.path.join(CURRENT_DIR, "test.csv")
 RESULTS_FILE = os.path.join(CURRENT_DIR, "rag_results.json")
 
@@ -43,7 +42,6 @@ def collect_answers():
     for i, item in enumerate(test_questions):
         print(f"[{i+1}/{len(test_questions)}] Processing: {item['question'][:50]}...")
 
-        # Run your actual RAG system
         response = process_query(item["question"])
 
         collected_data.append(
@@ -57,10 +55,10 @@ def collect_answers():
             }
         )
 
-        # Prevent hitting Gemini rate limits during collection
+        # A 1-second delay between requests keeps throughput within Gemini's
+        # free-tier rate limits and avoids 429 errors mid-collection.
         time.sleep(1)
 
-    # Save to a local file
     with open(RESULTS_FILE, "w") as f:
         json.dump(collected_data, f, indent=4)
 

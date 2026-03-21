@@ -7,7 +7,6 @@ from audit_ai.config import (
     LLM_MODEL, EMBEDDING_MODEL, COLLECTION_NAME,
 )
 
-# --- LangChain & Qdrant Imports ---
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -17,7 +16,6 @@ from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from langchain_core.runnables import RunnableConfig
 
-# --- LangGraph Imports ---
 from langgraph.graph import StateGraph, END
 
 # =============================================================================
@@ -26,19 +24,26 @@ from langgraph.graph import StateGraph, END
 
 class GraphState(TypedDict):
     """
-    Represents the state of our graph (the "Backpack").
+    The shared context that flows through every node in the CRAG graph.
+
+    Using TypedDict (rather than a plain dict) gives static type checking and
+    makes the contract between nodes explicit — each node declares exactly which
+    fields it reads and writes.
     """
-    question: str                        # The user's original input
-    search_query: str                    # The query used for retrieval (can be rewritten)
-    generation: str                      # The final answer
-    documents: List[Document]            # The retrieved context chunks
-    grade: str                           # 'yes' or 'no' (Relevance check)
-    retry_count: int                     # Tracks retries
-    history: List[Dict[str, str]]        # Conversation history [{"role": "user"/"assistant", "content": "..."}]
+    question: str               # The user's original, unmodified question
+    search_query: str           # The query actually sent to the vector store (may be rewritten)
+    generation: str             # The final answer produced by the generate node
+    documents: List[Document]   # The chunks retrieved from Qdrant
+    grade: str                  # Relevance verdict from the grader: 'yes' or 'no'
+    retry_count: int            # Number of query-rewrite attempts so far
+    history: List[Dict[str, str]]  # Prior turns in the conversation
 
 
 def _format_history(history: List[Dict[str, str]]):
-    """Converts history dicts to LangChain message objects."""
+    """
+    Converts the plain-dict history format used by the API into typed LangChain
+    message objects required by ChatPromptTemplate's MessagesPlaceholder.
+    """
     messages = []
     for msg in history:
         if msg.get("role") == "user":
@@ -47,11 +52,13 @@ def _format_history(history: List[Dict[str, str]]):
             messages.append(AIMessage(content=msg["content"]))
     return messages
 
+
 # =============================================================================
 # 2. INITIALIZATION
 # =============================================================================
 
-# Initialize Components using Centralized Config
+# temperature=0 is intentional: compliance answers must be deterministic and
+# grounded in the retrieved text, not creatively embellished.
 llm = ChatGoogleGenerativeAI(
     model=LLM_MODEL,
     temperature=0,
@@ -71,14 +78,19 @@ vector_store = QdrantVectorStore(
     embedding=embeddings,
 )
 
+
 # =============================================================================
-# 2. DEFINE THE NODES (AGENTS)
+# 3. GRAPH NODES
 # =============================================================================
 
 def retrieve(state: GraphState):
     """
-    Node 1: RETRIEVE
-    Queries Qdrant using either the 'search_query' (if rewritten) or original 'question'.
+    Queries the vector store for the most relevant document chunks.
+
+    If the query was previously rewritten by transform_query, that improved
+    version is used instead of the original question to maximise recall.
+    k=10 was chosen to give the grader enough coverage without inflating
+    the context window passed to the generator.
     """
     print("---RETRIEVE NODE---")
     query = state.get("search_query") or state["question"]
@@ -88,8 +100,11 @@ def retrieve(state: GraphState):
 
 def grade_documents(state: GraphState):
     """
-    Node 2: GRADE DOCUMENTS (The Critic)
-    Checks if retrieved documents are relevant.
+    Assesses whether any retrieved document is relevant to the question.
+
+    A short-circuit strategy is used: as soon as one relevant document is found,
+    grading stops. This avoids unnecessary LLM calls when the first chunk already
+    confirms a good retrieval.
     """
     print("---GRADE DOCUMENTS NODE---")
     question = state["question"]
@@ -118,8 +133,11 @@ def grade_documents(state: GraphState):
 
 def transform_query(state: GraphState):
     """
-    Node 3: TRANSFORM QUERY (The Fixer)
-    Rewrites the question to improve vector search if grading failed.
+    Rewrites the user's question into a more effective vector search query.
+
+    Natural-language questions often contain pronouns, filler words, or phrasing
+    that doesn't match the dense technical vocabulary in the NIST document.
+    Rewriting towards domain-specific terms significantly improves retrieval recall.
     """
     print("---TRANSFORM QUERY NODE---")
     question = state["question"]
@@ -141,8 +159,13 @@ def transform_query(state: GraphState):
 
 async def generate(state: GraphState, config: RunnableConfig):
     """
-    Node 4: GENERATE
-    Produces the final answer using retrieved context.
+    Produces the final answer strictly from the retrieved context.
+
+    The system prompt enforces source attribution and prohibits the model from
+    drawing on its pretrained knowledge. This ensures answers are always traceable
+    back to a specific document, which is a core requirement for compliance auditing.
+    The RunnableConfig is forwarded so that LangGraph can intercept token-level
+    streaming events for the SSE response in the API layer.
     """
     print("---GENERATE NODE---")
     question = state["question"]
@@ -180,25 +203,30 @@ async def generate(state: GraphState, config: RunnableConfig):
 
 
 # =============================================================================
-# 3. BUILD THE GRAPH LOGIC
+# 4. GRAPH ASSEMBLY
 # =============================================================================
 
 workflow = StateGraph(GraphState)
 
-# Add Nodes
 workflow.add_node("retrieve", retrieve)
 workflow.add_node("grade_documents", grade_documents)
 workflow.add_node("generate", generate)
 workflow.add_node("transform_query", transform_query)
 
-# Define Entry Point
 workflow.set_entry_point("retrieve")
 
-# Add Edges
 workflow.add_edge("retrieve", "grade_documents")
 workflow.add_edge("transform_query", "retrieve")
 
+
 def decide_to_generate(state: GraphState):
+    """
+    Routing function for the conditional edge after grade_documents.
+
+    The retry cap at 3 prevents infinite loops when no relevant documents exist
+    in the knowledge base. After 3 failed rewrites, we generate from whatever
+    partial context is available rather than hanging indefinitely.
+    """
     grade = state.get("grade")
     retries = state.get("retry_count", 0)
 
@@ -209,6 +237,7 @@ def decide_to_generate(state: GraphState):
     else:
         return "transform_query"
 
+
 workflow.add_conditional_edges(
     "grade_documents",
     decide_to_generate,
@@ -217,22 +246,28 @@ workflow.add_conditional_edges(
 
 workflow.add_edge("generate", END)
 
-# Compile the Graph
 app = workflow.compile()
 
+
 # =============================================================================
-# 4. PUBLIC INTERFACE (Used by API)
+# 5. PUBLIC INTERFACE
 # =============================================================================
 
 def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Literal["chat", "search"]:
     """
-    Semantic Router: Decides if the query is a basic greeting/identity check
-    or a complex compliance search requiring the graph.
+    Classifies the user's intent before invoking the full CRAG graph.
+
+    Routing is done outside the compiled graph so that casual messages (greetings,
+    off-topic questions) short-circuit immediately without touching the vector store.
+    The last 3 conversation turns are included so the router can correctly handle
+    follow-up questions that reference prior context (e.g., "can you elaborate?").
+    When in doubt, the router defaults to 'chat' to avoid unnecessarily expensive
+    retrieval on non-compliance queries.
     """
     history = history or []
     history_context = ""
     if history:
-        recent = history[-6:]  # last 3 exchanges
+        recent = history[-6:]  # last 3 exchanges (user + assistant per turn)
         history_context = "Previous conversation:\n" + "\n".join(
             f"{m['role'].title()}: {m['content']}" for m in recent
         ) + "\n\n"
@@ -255,6 +290,8 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     return "search"
 
 
+# The chat prompt is defined at module level so the chain is instantiated once
+# and reused across requests rather than being rebuilt on every call.
 _chat_prompt = ChatPromptTemplate.from_messages([
     ("system",
         "You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.\n\n"
@@ -278,11 +315,14 @@ def run_chat_logic(user_query: str, history: List[Dict[str, str]] = None):
     return {"answer": answer}
 
 
-
 def process_query(user_query: str, history: List[Dict[str, str]] = None):
     """
-    Helper function for non-streaming execution (e.g., for evals).
-    Safe to call from both sync and async contexts.
+    Synchronous entry point for non-streaming execution (used by the eval pipeline).
+
+    The graph's async invoke is wrapped in a dedicated thread via ThreadPoolExecutor
+    so that asyncio.run() can safely create a fresh event loop. This avoids the
+    "event loop already running" error that occurs when calling async code from
+    within an already-running event loop (e.g. Jupyter, async test runners).
     """
     history = history or []
     intent = route_query(user_query, history)
@@ -292,8 +332,6 @@ def process_query(user_query: str, history: List[Dict[str, str]] = None):
 
     inputs = {"question": user_query, "history": history}
     try:
-        # Run in a new thread to avoid "event loop already running" errors
-        # when called from an async context (e.g., Jupyter, async test runners).
         import concurrent.futures
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(asyncio.run, app.ainvoke(inputs))

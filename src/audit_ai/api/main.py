@@ -7,7 +7,6 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Import the graph AND the router logic
 from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history
 
 app = FastAPI(
@@ -16,6 +15,8 @@ app = FastAPI(
     version="2.0",
 )
 
+# Wildcard CORS is intentional for this deployment: the frontend is served from a
+# separate origin and the API does not expose any authenticated user data.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,11 +33,19 @@ class ChatRequest(BaseModel):
 
 async def run_agent_stream(query: str, history: list = None):
     """
-    Robust Generator: Streams text and conditionally filters sources if the AI doesn't know the answer.
+    Async generator that streams the agent's response as NDJSON tokens.
+
+    The router runs first to decide whether the query needs full RAG retrieval or
+    can be answered by the lightweight chat chain. This avoids a round-trip to
+    Qdrant for messages that don't require document lookup.
+
+    Sources are withheld when the model's answer contains a known refusal phrase,
+    preventing the UI from displaying irrelevant citations alongside a "no answer" response.
     """
     history = history or []
 
-    # --- 1. ROUTER (Fast Path) ---
+    # --- 1. ROUTING ---
+    # Classify intent before touching the vector store to avoid unnecessary retrieval cost.
     intent = route_query(query, history)
 
     if intent == "chat":
@@ -48,19 +57,19 @@ async def run_agent_stream(query: str, history: list = None):
         yield f"{payload}\n"
         return
 
-    # --- 2. GRAPH (Search Path) ---
+    # --- 2. RAG GRAPH ---
     captured_sources = []
-    full_answer_accumulator = ""  # Track the full answer to check for "I don't know"
+    full_answer_accumulator = ""
 
     try:
-        # Stream events from the graph
         async for event in audit_graph.astream_events(
             {"question": query, "history": history}, version="v1"
         ):
             kind = event["event"]
             data = event.get("data", {})
 
-            # A. Capture Sources (When retrieval finishes)
+            # Capture the source documents when the retrieve node completes so they
+            # can be attached to the final response after generation finishes.
             if kind == "on_chain_end" and event.get("name") == "retrieve":
                 if "output" in data and data["output"]:
                     docs = data["output"].get("documents", [])
@@ -73,9 +82,10 @@ async def run_agent_stream(query: str, history: list = None):
                         for d in docs
                     ]
 
-            # B. Capture Tokens
+            # Stream only tokens produced by the generate node. Other nodes (grader,
+            # query rewriter) also emit LLM chunks, but those are internal signals
+            # ('yes'/'no', rewritten queries) that should never be shown to the user.
             if "chunk" in data:
-                # Only stream tokens from the 'generate' graph node to avoid leaking grader output ("yes"/"no")
                 if event.get("metadata", {}).get("langgraph_node") != "generate":
                     continue
 
@@ -87,7 +97,7 @@ async def run_agent_stream(query: str, history: list = None):
                     content = chunk["content"]
 
                 if content:
-                    full_answer_accumulator += content  # Accumulate text
+                    full_answer_accumulator += content
                     payload = json.dumps({"type": "token", "content": content})
                     yield f"{payload}\n"
 
@@ -98,8 +108,11 @@ async def run_agent_stream(query: str, history: list = None):
         )
         yield f"{err_payload}\n"
 
-    # --- 3. SMART SOURCE FILTERING ---
-    # We defined standard refusal phrases in the prompt. If the AI says them, we hide sources.
+    # --- 3. SOURCE FILTERING ---
+    # The system prompt instructs the model to use specific phrases when it cannot
+    # answer from the provided context. Detecting those phrases here lets us suppress
+    # sources on the client side, avoiding the misleading appearance of citations
+    # alongside a "not found" response.
     refusal_phrases = [
         "missing from the database",
         "does not mention",
@@ -114,10 +127,8 @@ async def run_agent_stream(query: str, history: list = None):
     )
 
     if is_refusal:
-        # If the AI admitted it doesn't know, send ZERO sources.
         payload = json.dumps({"type": "sources", "content": []})
     else:
-        # Otherwise, send the retrieved sources.
         payload = json.dumps({"type": "sources", "content": captured_sources})
 
     yield f"{payload}\n"
@@ -125,6 +136,8 @@ async def run_agent_stream(query: str, history: list = None):
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
+    # Cache-Control and X-Accel-Buffering headers are required to prevent Nginx
+    # and CDN layers from buffering the stream before it reaches the client.
     return StreamingResponse(
         run_agent_stream(request.query, request.history),
         media_type="application/x-ndjson",
