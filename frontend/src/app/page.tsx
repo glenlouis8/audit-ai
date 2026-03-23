@@ -50,7 +50,7 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                Powered by LangGraph & Llama-3
+                Powered by LangGraph & Google Gemini
             </motion.div>
 
             <motion.h1 
@@ -99,7 +99,7 @@ export default function Home() {
         >
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                 <TechItem name="LangGraph" icon={<Network size={18} className="text-orange-400"/>} />
-                <TechItem name="Llama 3" icon={<BrainCircuit size={18} className="text-blue-400"/>} />
+                <TechItem name="Google Gemini" icon={<BrainCircuit size={18} className="text-blue-400"/>} />
                 <TechItem name="Qdrant" icon={<Database size={18} className="text-red-400"/>} />
                 <TechItem name="FastAPI" icon={<Cpu size={18} className="text-teal-400"/>} />
                 <TechItem name="Docker" icon={<Layers size={18} className="text-blue-500"/>} />
@@ -185,7 +185,7 @@ export default function Home() {
                     icon={<BrainCircuit size={24} />} 
                     step="03" 
                     title="Reasoning" 
-                    desc="Llama-3 synthesizes the answer from valid chunks." 
+                    desc="Google Gemini synthesizes the answer from valid chunks."
                 />
                 <ArchitectureStep 
                     icon={<Lock size={24} />} 

@@ -5,6 +5,7 @@ from typing import Dict, List, Literal, TypedDict
 from audit_ai.config import (
     GOOGLE_API_KEY, QDRANT_URL, QDRANT_API_KEY,
     LLM_MODEL, EMBEDDING_MODEL, COLLECTION_NAME,
+    RETRIEVAL_K, MAX_RETRIES, HISTORY_WINDOW,
 )
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -94,7 +95,7 @@ def retrieve(state: GraphState):
     """
     print("---RETRIEVE NODE---")
     query = state.get("search_query") or state["question"]
-    documents = vector_store.similarity_search(query, k=10)
+    documents = vector_store.similarity_search(query, k=RETRIEVAL_K)
     return {"documents": documents, "question": state["question"]}
 
 
@@ -232,7 +233,7 @@ def decide_to_generate(state: GraphState):
 
     if grade == "yes":
         return "generate"
-    elif retries >= 3:
+    elif retries >= MAX_RETRIES:
         return "generate"
     else:
         return "transform_query"
@@ -267,7 +268,7 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     history = history or []
     history_context = ""
     if history:
-        recent = history[-6:]  # last 3 exchanges (user + assistant per turn)
+        recent = history[-HISTORY_WINDOW:]  # last 3 exchanges (user + assistant per turn)
         history_context = "Previous conversation:\n" + "\n".join(
             f"{m['role'].title()}: {m['content']}" for m in recent
         ) + "\n\n"

@@ -52,10 +52,10 @@ export default function ChatInterface() {
     setQuery("");
     setIsLoading(true);
 
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: userQuery };
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: userQuery };
     setMessages((prev) => [...prev, userMsg]);
 
-    const assistantId = (Date.now() + 1).toString();
+    const assistantId = crypto.randomUUID();
     const assistantMsg: Message = { 
       id: assistantId, 
       role: "assistant", 
@@ -120,6 +120,28 @@ export default function ChatInterface() {
             } catch (e) { console.warn("Parse error", e); }
           }
         }
+      }
+
+      // Flush any data that arrived without a trailing newline (e.g. the final sources line)
+      if (buffer.trim()) {
+        try {
+          const data = JSON.parse(buffer);
+          if (data.type === "token") {
+            accumulatedContent += data.content;
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantId ? { ...msg, content: accumulatedContent } : msg
+              )
+            );
+          }
+          if (data.type === "sources") {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantId ? { ...msg, sources: data.content, isStreaming: false } : msg
+              )
+            );
+          }
+        } catch (e) { console.warn("Parse error on final buffer", e); }
       }
     } catch (error) {
       setMessages((prev) => prev.map(msg => msg.id === assistantId ? { ...msg, content: "Network Error: Could not reach the server.", isStreaming: false } : msg));
@@ -309,20 +331,30 @@ export default function ChatInterface() {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
+              onChange={(e) => setQuery(e.target.value.slice(0, 5000))}
+              onKeyDown={(e) => e.key === "Enter" && !isLoading && query.length <= 5000 && handleSendMessage()}
               placeholder="Ask a compliance question..."
               disabled={isLoading}
-              className="w-full bg-[#18181b] text-gray-100 border border-white/10 rounded-xl px-5 py-4 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all placeholder-gray-500 shadow-lg"
+              className={`w-full bg-[#18181b] text-gray-100 border rounded-xl px-5 py-4 pr-16 text-base focus:outline-none focus:ring-2 transition-all placeholder-gray-500 shadow-lg ${
+                query.length > 4800
+                  ? "border-red-500/50 focus:ring-red-500/50 focus:border-red-500/50"
+                  : "border-white/10 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+              }`}
             />
-            
+
+            {query.length > 4000 && (
+              <span className={`absolute right-14 text-xs font-mono ${query.length > 4800 ? "text-red-400" : "text-gray-500"}`}>
+                {query.length}/5000
+              </span>
+            )}
+
             <button
               onClick={handleSendMessage}
-              disabled={isLoading || !query.trim()}
+              disabled={isLoading || !query.trim() || query.length > 5000}
               className={`
                 absolute right-2 p-2.5 rounded-lg transition-all
-                ${query.trim() 
-                    ? "bg-emerald-600 text-white hover:bg-emerald-500 shadow-md" 
+                ${query.trim() && query.length <= 5000
+                    ? "bg-emerald-600 text-white hover:bg-emerald-500 shadow-md"
                     : "bg-transparent text-gray-600 cursor-not-allowed"}
               `}
             >

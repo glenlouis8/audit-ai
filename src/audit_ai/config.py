@@ -15,6 +15,22 @@ LLM_MODEL = "gemini-2.5-flash-lite"
 EVAL_JUDGE_MODEL = "gemini-2.5-flash-lite"
 COLLECTION_NAME = "compliance_audit"
 
+# --- RAG tuning knobs ---
+# Number of documents fetched from Qdrant per query. Higher values improve recall but increase
+# grading cost (one LLM call per document).
+RETRIEVAL_K = 10
+
+# Maximum number of query-rewrite retries before falling back to partial-context generation.
+MAX_RETRIES = 3
+
+# PDF ingestion chunking parameters. Overlap prevents important sentences being split across chunks.
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
+
+# Number of recent chat history messages (user + assistant interleaved) passed to the router.
+# 6 items = 3 full turns. Keeps context window small while preserving short-term memory.
+HISTORY_WINDOW = 6
+
 # Resolve the project root relative to this file so paths work regardless of the working directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

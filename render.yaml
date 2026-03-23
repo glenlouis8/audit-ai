@@ -6,8 +6,6 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
-      - key: GROQ_API_KEY
-        sync: false
       - key: QDRANT_URL
         sync: false
       - key: QDRANT_API_KEY

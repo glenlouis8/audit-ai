@@ -1,4 +1,5 @@
 import os
+import asyncio
 import json
 from typing import List, Optional, Dict, Any
 
@@ -7,7 +8,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history
+from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history, client as qdrant_client
 
 app = FastAPI(
     title="AuditAI Agent API",
@@ -24,6 +25,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+MAX_QUERY_LENGTH = 5000
 
 
 class ChatRequest(BaseModel):
@@ -62,45 +66,49 @@ async def run_agent_stream(query: str, history: list = None):
     full_answer_accumulator = ""
 
     try:
-        async for event in audit_graph.astream_events(
-            {"question": query, "history": history}, version="v1"
-        ):
-            kind = event["event"]
-            data = event.get("data", {})
+        async with asyncio.timeout(120):
+            async for event in audit_graph.astream_events(
+                {"question": query, "history": history}, version="v1"
+            ):
+                kind = event["event"]
+                data = event.get("data", {})
 
-            # Capture the source documents when the retrieve node completes so they
-            # can be attached to the final response after generation finishes.
-            if kind == "on_chain_end" and event.get("name") == "retrieve":
-                if "output" in data and data["output"]:
-                    docs = data["output"].get("documents", [])
-                    captured_sources = [
-                        {
-                            "file": d.metadata.get("source_file", "NIST CSF 2.0"),
-                            "page": d.metadata.get("page", 0),
-                            "text": d.page_content[:200] + "...",
-                        }
-                        for d in docs
-                    ]
+                # Capture the source documents when the retrieve node completes so they
+                # can be attached to the final response after generation finishes.
+                if kind == "on_chain_end" and event.get("name") == "retrieve":
+                    if "output" in data and data["output"]:
+                        docs = data["output"].get("documents", [])
+                        captured_sources = [
+                            {
+                                "file": d.metadata.get("source_file", "NIST CSF 2.0"),
+                                "page": d.metadata.get("page", 0),
+                                "text": d.page_content[:200] + "...",
+                            }
+                            for d in docs
+                        ]
 
-            # Stream only tokens produced by the generate node. Other nodes (grader,
-            # query rewriter) also emit LLM chunks, but those are internal signals
-            # ('yes'/'no', rewritten queries) that should never be shown to the user.
-            if "chunk" in data:
-                if event.get("metadata", {}).get("langgraph_node") != "generate":
-                    continue
+                # Stream only tokens produced by the generate node. Other nodes (grader,
+                # query rewriter) also emit LLM chunks, but those are internal signals
+                # ('yes'/'no', rewritten queries) that should never be shown to the user.
+                if "chunk" in data:
+                    if event.get("metadata", {}).get("langgraph_node") != "generate":
+                        continue
 
-                chunk = data["chunk"]
-                content = ""
-                if hasattr(chunk, "content"):
-                    content = chunk.content
-                elif isinstance(chunk, dict) and "content" in chunk:
-                    content = chunk["content"]
+                    chunk = data["chunk"]
+                    content = ""
+                    if hasattr(chunk, "content"):
+                        content = chunk.content
+                    elif isinstance(chunk, dict) and "content" in chunk:
+                        content = chunk["content"]
 
-                if content:
-                    full_answer_accumulator += content
-                    payload = json.dumps({"type": "token", "content": content})
-                    yield f"{payload}\n"
+                    if content:
+                        full_answer_accumulator += content
+                        payload = json.dumps({"type": "token", "content": content})
+                        yield f"{payload}\n"
 
+    except asyncio.TimeoutError:
+        err_payload = json.dumps({"type": "token", "content": "\n[Request timed out. Please try again.]"})
+        yield f"{err_payload}\n"
     except Exception as e:
         print(f"Graph Error: {e}")
         err_payload = json.dumps(
@@ -136,6 +144,9 @@ async def run_agent_stream(query: str, history: list = None):
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
+    if len(request.query) > MAX_QUERY_LENGTH:
+        raise HTTPException(status_code=400, detail=f"Query exceeds {MAX_QUERY_LENGTH} character limit.")
+
     # Cache-Control and X-Accel-Buffering headers are required to prevent Nginx
     # and CDN layers from buffering the stream before it reaches the client.
     return StreamingResponse(
@@ -147,7 +158,18 @@ async def chat_endpoint(request: ChatRequest):
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    # Verify Qdrant is reachable — if it's down every RAG request will fail,
+    # so we surface that here so Render can detect the outage and alert/restart.
+    try:
+        qdrant_client.get_collections()
+        qdrant_ok = True
+    except Exception:
+        qdrant_ok = False
+
+    if not qdrant_ok:
+        raise HTTPException(status_code=503, detail={"status": "unhealthy", "qdrant": False})
+
+    return {"status": "healthy", "qdrant": True}
 
 
 if __name__ == "__main__":
