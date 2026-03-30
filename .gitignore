@@ -41,6 +41,10 @@ rag_results.json
 ragas_results.csv
 *.log
 
+# Claude Code
+CLAUDE.md
+**/CLAUDE.md
+
 # IDEs
 .vscode/
 .idea/
