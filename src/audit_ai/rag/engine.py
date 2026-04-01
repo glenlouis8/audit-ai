@@ -175,7 +175,7 @@ async def generate(state: GraphState, config: RunnableConfig):
 
     context_text = "\n\n".join(
         [
-            f"[Source: {doc.metadata.get('source_file', 'Unknown')}]\n{doc.page_content}"
+            f"[Source: NIST CSF 2.0, Page {doc.metadata.get('page', '?')}]\n{doc.page_content}"
             for doc in documents
         ]
     )
