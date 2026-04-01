@@ -18,7 +18,7 @@ COLLECTION_NAME = "compliance_audit"
 # --- RAG tuning knobs ---
 # Number of documents fetched from Qdrant per query. Higher values improve recall but increase
 # grading cost (one LLM call per document).
-RETRIEVAL_K = 10
+RETRIEVAL_K = 4
 
 # Maximum number of query-rewrite retries before falling back to partial-context generation.
 MAX_RETRIES = 3

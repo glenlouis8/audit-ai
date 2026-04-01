@@ -82,7 +82,7 @@ async def run_agent_stream(query: str, history: list = None):
                             {
                                 "file": d.metadata.get("source_file", "NIST CSF 2.0"),
                                 "page": d.metadata.get("page", 0),
-                                "text": d.page_content[:200] + "...",
+                                "text": d.page_content[:400] + "...",
                             }
                             for d in docs
                         ]

@@ -184,7 +184,9 @@ async def generate(state: GraphState, config: RunnableConfig):
         ("system",
             "You are a strict Compliance Auditor AI. "
             "Answer the user's question using ONLY the context provided below. "
-            "When answering, refer to the specific document names (e.g., 'According to the NIST framework...' or 'The Acme Policy states...'). "
+            "Quote the relevant text from the source directly and verbatim — do not paraphrase or summarize. "
+            "Use block quotes (>) for exact excerpts, then briefly note the source name and page if available. "
+            "If multiple passages are relevant, quote each one. "
             "If the documents conflict, point out the difference. "
             "If the context is empty, simply state that the specific information is missing from the database.\n\n"
             "Context:\n{context}"
