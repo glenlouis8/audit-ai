@@ -76,11 +76,17 @@ embeddings = GoogleGenerativeAIEmbeddings(
 
 client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-vector_store = QdrantVectorStore(
-    client=client,
-    collection_name=COLLECTION_NAME,
-    embedding=embeddings,
-)
+_vector_store: QdrantVectorStore | None = None
+
+def _get_vector_store() -> QdrantVectorStore:
+    global _vector_store
+    if _vector_store is None:
+        _vector_store = QdrantVectorStore(
+            client=client,
+            collection_name=COLLECTION_NAME,
+            embedding=embeddings,
+        )
+    return _vector_store
 
 
 # =============================================================================
@@ -148,7 +154,7 @@ def retrieve(state: GraphState):
     """
     print("---RETRIEVE NODE---")
     query = state.get("search_query") or state["question"]
-    documents = vector_store.similarity_search(query, k=RETRIEVAL_K)
+    documents = _get_vector_store().similarity_search(query, k=RETRIEVAL_K)
     return {"documents": documents, "question": state["question"]}
 
 
