@@ -1,11 +1,13 @@
 import os
 import asyncio
 from typing import Dict, List, Literal, TypedDict
+from uuid import uuid4
 
 from audit_ai.config import (
     GOOGLE_API_KEY, QDRANT_URL, QDRANT_API_KEY,
     LLM_MODEL, EMBEDDING_MODEL, COLLECTION_NAME,
     RETRIEVAL_K, MAX_RETRIES, HISTORY_WINDOW,
+    CACHE_COLLECTION, CACHE_SIMILARITY_THRESHOLD, CACHE_EMBEDDING_DIM,
 )
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -15,6 +17,7 @@ from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
+from qdrant_client.models import VectorParams, Distance, PointStruct
 from langchain_core.runnables import RunnableConfig
 
 from langgraph.graph import StateGraph, END
@@ -81,7 +84,57 @@ vector_store = QdrantVectorStore(
 
 
 # =============================================================================
-# 3. GRAPH NODES
+# 3. SEMANTIC CACHE
+# =============================================================================
+
+def _ensure_cache_collection():
+    try:
+        client.get_collection(CACHE_COLLECTION)
+    except Exception:
+        client.create_collection(
+            collection_name=CACHE_COLLECTION,
+            vectors_config=VectorParams(size=CACHE_EMBEDDING_DIM, distance=Distance.COSINE),
+        )
+        print(f"---CACHE COLLECTION CREATED: {CACHE_COLLECTION}---")
+
+_ensure_cache_collection()
+
+
+async def check_cache(query: str) -> dict | None:
+    try:
+        query_vec = embeddings.embed_query(query)
+        results = client.search(
+            collection_name=CACHE_COLLECTION,
+            query_vector=query_vec,
+            limit=1,
+            score_threshold=CACHE_SIMILARITY_THRESHOLD,
+        )
+        if results:
+            print(f"---CACHE HIT (score={results[0].score:.3f})---")
+            return results[0].payload
+    except Exception as e:
+        print(f"Cache check failed: {e}")
+    return None
+
+
+async def store_cache(query: str, answer: str, sources: list):
+    try:
+        query_vec = embeddings.embed_query(query)
+        client.upsert(
+            collection_name=CACHE_COLLECTION,
+            points=[PointStruct(
+                id=str(uuid4()),
+                vector=query_vec,
+                payload={"answer": answer, "sources": sources},
+            )],
+        )
+        print("---CACHE STORED---")
+    except Exception as e:
+        print(f"Cache store failed: {e}")
+
+
+# =============================================================================
+# 4. GRAPH NODES
 # =============================================================================
 
 def retrieve(state: GraphState):
@@ -99,13 +152,12 @@ def retrieve(state: GraphState):
     return {"documents": documents, "question": state["question"]}
 
 
-def grade_documents(state: GraphState):
+async def grade_documents(state: GraphState):
     """
     Assesses whether any retrieved document is relevant to the question.
 
-    A short-circuit strategy is used: as soon as one relevant document is found,
-    grading stops. This avoids unnecessary LLM calls when the first chunk already
-    confirms a good retrieval.
+    All documents are graded in parallel via asyncio.gather — worst-case latency
+    drops from k*LLM_latency to 1*LLM_latency regardless of RETRIEVAL_K.
     """
     print("---GRADE DOCUMENTS NODE---")
     question = state["question"]
@@ -121,13 +173,11 @@ def grade_documents(state: GraphState):
 
     chain = prompt | llm | StrOutputParser()
 
-    score = "no"
-    for doc in documents:
-        grade = chain.invoke({"question": question, "context": doc.page_content})
-        if "yes" in grade.lower():
-            score = "yes"
-            break
+    grades = await asyncio.gather(
+        *[chain.ainvoke({"question": question, "context": doc.page_content}) for doc in documents]
+    )
 
+    score = "yes" if any("yes" in g.lower() for g in grades) else "no"
     print(f"---RESULT: Documents relevant? {score.upper()}---")
     return {"grade": score}
 
@@ -256,6 +306,12 @@ app = workflow.compile()
 # 5. PUBLIC INTERFACE
 # =============================================================================
 
+_CHAT_KEYWORDS = {
+    "hi", "hello", "hey", "thanks", "thank you", "bye", "goodbye",
+    "who are you", "what are you", "what can you do", "help",
+}
+
+
 def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Literal["chat", "search"]:
     """
     Classifies the user's intent before invoking the full CRAG graph.
@@ -266,7 +322,14 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     follow-up questions that reference prior context (e.g., "can you elaborate?").
     When in doubt, the router defaults to 'chat' to avoid unnecessarily expensive
     retrieval on non-compliance queries.
+
+    A keyword pre-filter runs first to skip the LLM call entirely for obvious greetings.
     """
+    # Fast path: obvious greetings/identity — no LLM call needed
+    query_lower = user_query.lower().strip()
+    if len(user_query) < 60 and any(kw in query_lower for kw in _CHAT_KEYWORDS):
+        return "chat"
+
     history = history or []
     history_context = ""
     if history:

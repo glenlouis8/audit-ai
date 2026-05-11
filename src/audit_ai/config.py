@@ -14,6 +14,9 @@ EMBEDDING_MODEL = "models/gemini-embedding-001"
 LLM_MODEL = "gemini-2.5-flash-lite"
 EVAL_JUDGE_MODEL = "gemini-2.5-flash-lite"
 COLLECTION_NAME = "compliance_audit"
+CACHE_COLLECTION = "semantic_cache"
+CACHE_SIMILARITY_THRESHOLD = 0.93
+CACHE_EMBEDDING_DIM = 3072  # gemini-embedding-001 default output dimension
 
 # --- RAG tuning knobs ---
 # Number of documents fetched from Qdrant per query. Higher values improve recall but increase

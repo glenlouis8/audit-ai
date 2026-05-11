@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history, client as qdrant_client
+from audit_ai.rag.engine import app as audit_graph, route_query, chat_chain, _format_history, client as qdrant_client, check_cache, store_cache
 
 app = FastAPI(
     title="AuditAI Agent API",
@@ -61,7 +61,17 @@ async def run_agent_stream(query: str, history: list = None):
         yield f"{payload}\n"
         return
 
-    # --- 2. RAG GRAPH ---
+    # --- 2. SEMANTIC CACHE ---
+    cached = await check_cache(query)
+    if cached:
+        for word in cached["answer"].split(" "):
+            payload = json.dumps({"type": "token", "content": word + " "})
+            yield f"{payload}\n"
+        payload = json.dumps({"type": "sources", "content": cached["sources"]})
+        yield f"{payload}\n"
+        return
+
+    # --- 3. RAG GRAPH ---
     captured_sources = []
     full_answer_accumulator = ""
 
@@ -116,7 +126,7 @@ async def run_agent_stream(query: str, history: list = None):
         )
         yield f"{err_payload}\n"
 
-    # --- 3. SOURCE FILTERING ---
+    # --- 4. SOURCE FILTERING ---
     # The system prompt instructs the model to use specific phrases when it cannot
     # answer from the provided context. Detecting those phrases here lets us suppress
     # sources on the client side, avoiding the misleading appearance of citations
@@ -138,6 +148,8 @@ async def run_agent_stream(query: str, history: list = None):
         payload = json.dumps({"type": "sources", "content": []})
     else:
         payload = json.dumps({"type": "sources", "content": captured_sources})
+        if full_answer_accumulator:
+            await store_cache(query, full_answer_accumulator, captured_sources)
 
     yield f"{payload}\n"
 
