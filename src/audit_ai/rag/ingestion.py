@@ -50,7 +50,7 @@ def ingest_docs():
         url=QDRANT_URL,
         api_key=QDRANT_API_KEY,
         collection_name=COLLECTION_NAME,
-        prefer_grpc=True,
+        prefer_grpc=False,
         force_recreate=True,
     )
     print("✅ Ingestion Complete! New Google vectors stored.")
