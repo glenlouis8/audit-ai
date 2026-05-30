@@ -1,8 +1,11 @@
 import os
+import glob
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.models import PayloadSchemaType
 from audit_ai.config import (
     BASE_DIR,
     COLLECTION_NAME,
@@ -14,14 +17,25 @@ from audit_ai.config import (
     CHUNK_OVERLAP,
 )
 
-PDF_FILE_NAME = os.path.join(BASE_DIR, "data", "nist_framework.pdf")
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
 
 def ingest_docs():
-    print(f"📄 Loading PDF: {PDF_FILE_NAME}...")
-    loader = PyPDFLoader(PDF_FILE_NAME)
-    documents = loader.load()
+    pdf_paths = glob.glob(os.path.join(DATA_DIR, "*.pdf"))
+    if not pdf_paths:
+        raise FileNotFoundError(f"No PDFs found in {DATA_DIR}")
 
+    documents = []
+    for path in pdf_paths:
+        fname = os.path.basename(path)
+        print(f"📄 Loading PDF: {fname}...")
+        loader = PyPDFLoader(path)
+        docs = loader.load()
+        for doc in docs:
+            doc.metadata["filename"] = fname
+        documents.extend(docs)
+
+    print(f"   Loaded {len(documents)} pages from {len(pdf_paths)} PDFs.")
     print("✂️  Splitting text...")
     # Chunk size of 1000 characters with 200-character overlap balances retrieval
     # granularity against context window usage. The overlap preserves continuity
@@ -53,7 +67,15 @@ def ingest_docs():
         prefer_grpc=False,
         force_recreate=True,
     )
-    print("✅ Ingestion Complete! New Google vectors stored.")
+
+    print("🗂️  Creating payload index on metadata.filename...")
+    qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    qdrant_client.create_payload_index(
+        collection_name=COLLECTION_NAME,
+        field_name="metadata.filename",
+        field_schema=PayloadSchemaType.KEYWORD,
+    )
+    print("✅ Ingestion Complete! Vectors stored and index created.")
 
 
 if __name__ == "__main__":

@@ -88,9 +88,18 @@ async def run_agent_stream(query: str, history: list = None):
                 if kind == "on_chain_end" and event.get("name") == "retrieve":
                     if "output" in data and data["output"]:
                         docs = data["output"].get("documents", [])
+                        _filename_to_framework = {
+                            "nist_framework.pdf": "NIST CSF 2.0",
+                            "NIST.SP.800-53r5.pdf": "NIST SP 800-53",
+                            "ISO_IEC-270012022-ed.3.pdf": "ISO 27001:2022",
+                            "trust-services-criteria.pdf": "SOC 2 TSC",
+                        }
                         captured_sources = [
                             {
-                                "file": "NIST CSF 2.0",
+                                "file": _filename_to_framework.get(
+                                    os.path.basename(d.metadata.get("source", "")),
+                                    os.path.basename(d.metadata.get("source", "Unknown")),
+                                ),
                                 "page": d.metadata.get("page", 0),
                                 "text": d.page_content[:400] + "...",
                             }

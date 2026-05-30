@@ -1,5 +1,6 @@
 import os
 import asyncio
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, List, Literal, TypedDict
 from uuid import uuid4
 
@@ -109,12 +110,12 @@ _ensure_cache_collection()
 async def check_cache(query: str) -> dict | None:
     try:
         query_vec = embeddings.embed_query(query)
-        results = client.search(
+        results = client.query_points(
             collection_name=CACHE_COLLECTION,
-            query_vector=query_vec,
+            query=query_vec,
             limit=1,
             score_threshold=CACHE_SIMILARITY_THRESHOLD,
-        )
+        ).points
         if results:
             print(f"---CACHE HIT (score={results[0].score:.3f})---")
             return results[0].payload
@@ -143,18 +144,37 @@ async def store_cache(query: str, answer: str, sources: list):
 # 4. GRAPH NODES
 # =============================================================================
 
-def retrieve(state: GraphState):
-    """
-    Queries the vector store for the most relevant document chunks.
+_FRAMEWORK_FILES = [
+    "nist_framework.pdf",
+    "NIST.SP.800-53r5.pdf",
+    "ISO_IEC-270012022-ed.3.pdf",
+    "trust-services-criteria.pdf",
+]
 
-    If the query was previously rewritten by transform_query, that improved
-    version is used instead of the original question to maximise recall.
-    k=10 was chosen to give the grader enough coverage without inflating
-    the context window passed to the generator.
-    """
+
+def _search_framework(query: str, filename: str) -> List:
+    from qdrant_client.models import Filter, FieldCondition, MatchValue
+    vs = _get_vector_store()
+    qdrant_filter = Filter(
+        must=[FieldCondition(key="metadata.filename", match=MatchValue(value=filename))]
+    )
+    return vs.similarity_search(query, k=RETRIEVAL_K, filter=qdrant_filter)
+
+
+def retrieve(state: GraphState):
     print("---RETRIEVE NODE---")
     query = state.get("search_query") or state["question"]
-    documents = _get_vector_store().similarity_search(query, k=RETRIEVAL_K)
+
+    documents = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {executor.submit(_search_framework, query, fname): fname for fname in _FRAMEWORK_FILES}
+        for future in as_completed(futures):
+            try:
+                documents.extend(future.result())
+            except Exception as e:
+                print(f"---RETRIEVE ERROR ({futures[future]}): {e}---")
+
+    print(f"---RETRIEVED {len(documents)} chunks across {len(_FRAMEWORK_FILES)} frameworks---")
     return {"documents": documents, "question": state["question"]}
 
 
@@ -203,7 +223,7 @@ def transform_query(state: GraphState):
         "You are generating a specialized vector search query from a user question. \n"
         "The previous search for the question '{question}' failed to yield relevant results. \n"
         "Please re-phrase the question to focus on key searchable terms relevant to the original intent. \n"
-        "If the question appears to be about NIST or cybersecurity policies, include core framework keywords. \n"
+        "If the question appears to be about cybersecurity compliance (NIST CSF, NIST SP 800-53, ISO 27001, SOC 2), include core framework keywords. \n"
         "Return ONLY the new query text."
     )
 
@@ -229,9 +249,15 @@ async def generate(state: GraphState, config: RunnableConfig):
     documents = state["documents"]
     history = state.get("history") or []
 
+    _filename_to_framework = {
+        "nist_framework.pdf": "NIST CSF 2.0",
+        "NIST.SP.800-53r5.pdf": "NIST SP 800-53",
+        "ISO_IEC-270012022-ed.3.pdf": "ISO 27001:2022",
+        "trust-services-criteria.pdf": "SOC 2 TSC",
+    }
     context_text = "\n\n".join(
         [
-            f"[Source: NIST CSF 2.0, Page {doc.metadata.get('page', '?')}]\n{doc.page_content}"
+            f"[Source: {_filename_to_framework.get(os.path.basename(doc.metadata.get('source', '')), 'Unknown')}, Page {doc.metadata.get('page', '?')}]\n{doc.page_content}"
             for doc in documents
         ]
     )
@@ -347,7 +373,7 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     prompt = ChatPromptTemplate.from_template(
         "You are a router. Classify user input into one of two categories: \n"
         "1. 'chat': Greetings, identity checks, unrelated/nonsense questions (dogs, painting, sports), or general help. \n"
-        "2. 'search': Specific, serious questions about NIST CSF 2.0, organizational policies, or compliance audits. \n\n"
+        "2. 'search': Specific, serious questions about cybersecurity compliance frameworks including NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2, organizational policies, security controls, or audit requirements. \n\n"
         "{history_context}"
         "Input: {query} \n"
         "If you are even slightly unsure if it is a compliance query, return 'chat'. \n"
@@ -366,12 +392,12 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
 # and reused across requests rather than being rebuilt on every call.
 _chat_prompt = ChatPromptTemplate.from_messages([
     ("system",
-        "You are **AuditAI**, a professional auditor specializing in the **NIST Cybersecurity Framework (CSF) 2.0**.\n\n"
+        "You are **AuditAI**, a professional compliance auditor specializing in cybersecurity frameworks: NIST CSF 2.0, NIST SP 800-53, ISO 27001:2022, and SOC 2.\n\n"
         "Rules:\n"
         "1. Respond naturally to greetings and identity questions.\n"
-        "2. If the user asks about your capabilities, mention that you can perform deep-dive audits against organizational policies using your Agentic RAG engine.\n"
+        "2. If the user asks about your capabilities, mention that you can audit against NIST CSF 2.0, NIST SP 800-53, ISO 27001, and SOC 2 using your Agentic RAG engine.\n"
         "3. For ANY question that is not a greeting or about your identity/capabilities, respond with exactly: "
-        "'I can only assist with NIST CSF 2.0 compliance and cybersecurity audit questions. Please ask me something related to that.'\n"
+        "'I can only assist with cybersecurity compliance questions (NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2). Please ask me something related to those frameworks.'\n"
         "4. Keep responses concise (1-3 sentences)."
     ),
     MessagesPlaceholder(variable_name="history"),

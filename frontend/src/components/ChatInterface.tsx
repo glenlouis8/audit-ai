@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, FileText, ChevronRight, ArrowLeft, StopCircle, RefreshCcw, ShieldCheck, Server } from "lucide-react";
+import { Send, Bot, User, FileText, ChevronRight, ArrowLeft, StopCircle, RefreshCcw, ShieldCheck, Server, Copy, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export default function ChatInterface() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hello. I am AuditAI. I'm ready to audit your internal policies against the NIST CSF 2.0 framework.",
+      content: "Hello. I am AuditAI. I can audit your policies against NIST CSF 2.0, NIST SP 800-53, ISO 27001:2022, and SOC 2. What would you like to know?",
       isStreaming: false
     },
   ]);
@@ -166,7 +166,7 @@ export default function ChatInterface() {
             </div>
             <div>
                 <h1 className="font-bold text-base text-white">AuditAI Console</h1>
-                <p className="text-xs text-gray-400">NIST CSF 2.0 • Live Agent</p>
+                <p className="text-xs text-gray-400">Multi-Framework • Live Agent</p>
             </div>
         </div>
         
@@ -226,7 +226,7 @@ export default function ChatInterface() {
               </div>
 
               {/* Message Bubble */}
-              <div className={`flex flex-col max-w-[85%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
+              <div className={`flex flex-col max-w-[85%] ${msg.role === "user" ? "items-end" : "items-start"} group/bubble`}>
                 
                 <div className={`
                   px-6 py-4 rounded-2xl text-[16px] leading-relaxed shadow-sm
@@ -273,6 +273,11 @@ export default function ChatInterface() {
 
                 </div>
 
+                {/* Copy Button */}
+                {msg.role === "assistant" && msg.content && !msg.isStreaming && (
+                  <CopyButton text={msg.content} />
+                )}
+
                 {/* Sources Carousel */}
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="mt-4 w-full border-t border-white/5 pt-4">
@@ -281,14 +286,18 @@ export default function ChatInterface() {
                     </p>
                     <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
                       {msg.sources.map((source, idx) => {
-                        
-                        const displayName = "NIST CSF 2.0"; 
-                        const officialUrl = `https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf#page=${source.page}`;
+                        const frameworkUrls: Record<string, string> = {
+                          "NIST CSF 2.0": `https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf#page=${source.page}`,
+                          "NIST SP 800-53": `https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf#page=${source.page}`,
+                          "ISO 27001:2022": `https://www.iso.org/standard/82875.html`,
+                          "SOC 2 TSC": `https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022`,
+                        };
+                        const officialUrl = frameworkUrls[source.file] ?? "#";
 
                         return (
-                        <a 
+                        <a
                           key={idx}
-                          href={officialUrl} 
+                          href={officialUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="
@@ -301,7 +310,7 @@ export default function ChatInterface() {
                             <div className="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm font-bold text-emerald-400">
-                                        {displayName}
+                                        {source.file}
                                     </span>
                                 </div>
                                 <span className="text-xs font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded group-hover:text-white">
@@ -367,11 +376,31 @@ export default function ChatInterface() {
         </div>
         <div className="text-center mt-3">
              <p className="text-[11px] text-gray-500">
-                AI generated responses can be inaccurate. Always verify against the official NIST PDF.
+                AI generated responses can be inaccurate. Always verify against the official framework documents.
              </p>
         </div>
       </div>
 
     </div>
+  );
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="mt-2 flex items-center gap-1.5 text-xs text-gray-500 hover:text-emerald-400 transition-colors opacity-0 group-hover/bubble:opacity-100"
+    >
+      {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+      <span>{copied ? "Copied" : "Copy"}</span>
+    </button>
   );
 }

@@ -59,7 +59,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-2xl"
             >
-                The Instant NIST CSF 2.0 <br />
+                Multi-Framework <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">
                     Compliance Expert
                 </span>
@@ -71,8 +71,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed"
             >
-                A production-grade <strong>Agentic RAG System</strong> that doesn't just search—it <em>reasons</em>. 
-                Verify compliance rules instantly with zero hallucinations.
+                A production-grade <strong>Agentic RAG System</strong> that doesn't just search—it <em>reasons</em>.
+                Audit against NIST CSF 2.0, NIST SP 800-53, ISO 27001, and SOC 2 with verified citations.
             </motion.p>
 
             <motion.div 
@@ -147,8 +147,8 @@ export default function Home() {
                                 <div className="h-4 bg-white/5 rounded w-3/4" />
                                 <div className="h-4 bg-white/5 rounded w-1/2" />
                                 <div className="flex gap-2 mt-2">
-                                    <div className="h-8 w-32 bg-teal-900/30 border border-teal-500/30 rounded flex items-center justify-center text-[10px] text-teal-300">NIST CSF 2.0</div>
-                                    <div className="h-8 w-32 bg-teal-900/30 border border-teal-500/30 rounded flex items-center justify-center text-[10px] text-teal-300">Page 42</div>
+                                    <div className="h-8 w-32 bg-teal-900/30 border border-teal-500/30 rounded flex items-center justify-center text-[10px] text-teal-300">ISO 27001:2022</div>
+                                    <div className="h-8 w-32 bg-teal-900/30 border border-teal-500/30 rounded flex items-center justify-center text-[10px] text-teal-300">Page 18</div>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +173,7 @@ export default function Home() {
                     icon={<Layers size={24} />} 
                     step="01" 
                     title="Ingestion" 
-                    desc="We load the NIST CSF 2.0 PDF and split it into 1000-character semantic chunks." 
+                    desc="We load 4 compliance frameworks (NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2) and split them into 1000-character semantic chunks."
                 />
                 <ArchitectureStep 
                     icon={<Database size={24} />} 
@@ -244,12 +244,18 @@ export default function Home() {
                     </p>
                  </div>
                  {/* Visual Citation */}
-                 <div className="hidden sm:flex gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                 <div className="hidden sm:flex gap-2 opacity-70 group-hover:opacity-100 transition-opacity flex-wrap">
                     <div className="bg-emerald-900/30 p-3 rounded-lg border border-emerald-500/30 w-32 text-center">
                         <span className="text-emerald-200 text-xs font-bold">NIST CSF 2.0</span>
                     </div>
                     <div className="bg-emerald-900/30 p-3 rounded-lg border border-emerald-500/30 w-32 text-center">
-                        <span className="text-emerald-200 text-xs font-bold">Page 42</span>
+                        <span className="text-emerald-200 text-xs font-bold">NIST 800-53</span>
+                    </div>
+                    <div className="bg-emerald-900/30 p-3 rounded-lg border border-emerald-500/30 w-32 text-center">
+                        <span className="text-emerald-200 text-xs font-bold">ISO 27001</span>
+                    </div>
+                    <div className="bg-emerald-900/30 p-3 rounded-lg border border-emerald-500/30 w-32 text-center">
+                        <span className="text-emerald-200 text-xs font-bold">SOC 2</span>
                     </div>
                  </div>
             </div>
