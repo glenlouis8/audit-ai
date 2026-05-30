@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AuditAI - NIST Compliance Engine",
-  description: "An autonomous RAG system for auditing regulatory compliance documents.",
+  title: "AuditAI | Cybersecurity Compliance Agent",
+  description: "Agentic RAG system for auditing organizations against NIST CSF 2.0, NIST SP 800-53, ISO 27001, and SOC 2.",
 };
 
 export default function RootLayout({
