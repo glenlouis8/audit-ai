@@ -1,25 +1,22 @@
-# 🤖 AuditAI: Autonomous Agentic RAG for NIST Compliance
+# 🤖 AuditAI: Multi-Framework Cybersecurity Compliance Agent
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live-green?style=for-the-badge)](https://audit-ai-frontend-pi.vercel.app)
 
-AuditAI is a production-grade **Agentic RAG** system designed to audit internal organizational policies against the **NIST Cybersecurity Framework (CSF 2.0)**.
+AuditAI is a production-grade **Agentic RAG** system that audits organizations against four major cybersecurity compliance frameworks: **NIST CSF 2.0**, **NIST SP 800-53**, **ISO 27001:2022**, and **SOC 2 Trust Services Criteria**.
 
-Unlike standard RAG pipelines, AuditAI utilizes a **Self-Correcting Graph Architecture** to ensure 100% faithfulness, strictly enforced reasoning, and dynamic retrieval optimization.
+Unlike standard RAG pipelines, AuditAI uses a **Self-Correcting Graph Architecture** with parallel per-framework retrieval to ensure faithful, citation-backed answers across multiple knowledge bases simultaneously.
 
 ---
 
-## 🏗️ Advanced Architecture: The "Agentic" Core
+## 🏗️ Architecture: The "Agentic" Core
 
-AuditAI is powered by a directed acyclic graph (DAG) orchestrated via **LangGraph**. This allows the system to move beyond "one-shot" retrieval into a multi-step reasoning process.
-
-### 1. The Self-Correction Loop
-The system implements a **CRAG (Corrective RAG)** pattern to handle low-quality retrieval:
+### 1. CRAG Flow (Corrective RAG)
 
 ```mermaid
 graph TD
     A[User Query] --> B{Semantic Router}
     B -- Small Talk/Identity --> C[Direct Response]
-    B -- Compliance Query --> D[Retrieve from Qdrant]
+    B -- Compliance Query --> D[Parallel Framework Retrieval]
     D --> E[Document Grader]
     E -- Relevant Docs Found --> F[RAG Generation]
     E -- No Relevant Docs --> G[Query Transformer]
@@ -28,70 +25,81 @@ graph TD
     C --> H
 ```
 
-*   **Semantic Router**: A fast-path LLM classifier that identifies intent. It bypasses the heavy graph for greetings or identity questions, reducing latency and cost.
-*   **Document Grader**: Evaluates retrieved chunks for semantic relevance to the query.
-*   **Query Transformer**: If the grader finds insufficient context, this node rephrases the user's question into a more optimized search query for vector retrieval, triggering a loop-back (up to 3 retries).
+- **Semantic Router**: Fast LLM classifier — bypasses vector search for greetings/identity questions
+- **Parallel Framework Retrieval**: 4 concurrent `ThreadPoolExecutor` searches, one per framework (k=4 each = 16 chunks total). Guarantees equal representation regardless of document size
+- **Document Grader**: Evaluates each chunk for relevance — runs all grades concurrently via `asyncio.gather`
+- **Query Transformer**: Rewrites failed queries using domain-specific terminology, loops back up to 3 times
+- **Semantic Cache**: Qdrant-backed cache (cosine similarity threshold 0.93) — skips the graph entirely on near-duplicate queries
 
-### 2. Hallucination Control & Citations
-AuditAI implements a "Strict Evidence" policy:
-*   **Page-Level Citations**: Every claim is mapped back to specific PDF page numbers and document names.
-*   **Refusal-Aware Suppression**: If the model determines the answer is missing from the database, the backend **dynamically suppresses** citation cards to prevent misleading the user with irrelevant sources.
+### 2. Hallucination Control
+- **Page-Level Citations**: Every claim traced back to framework name + PDF page number
+- **Refusal-Aware Suppression**: If generation contains known refusal phrases, citation cards are suppressed client-side
+- **Temperature 0**: Deterministic generation — no creative embellishment
+
+### 3. Streaming
+Server-Sent Events via FastAPI `StreamingResponse` with NDJSON:
+```json
+{"type": "token", "content": "The"}
+{"type": "sources", "content": [{"file": "NIST SP 800-53", "page": 335, "text": "..."}]}
+```
 
 ---
 
-## 🧠 AI Engineering Stack
+## 🧠 Tech Stack
 
-| Component | Technology | Rationale |
-| :--- | :--- | :--- |
-| **Orchestration** | LangGraph | Complex state management and cyclic loops (Self-Correction). |
-| **LLM** | `gemini-2.0-flash-lite` | Low-latency, cost-effective Gemini model for generation, routing, and grading. |
-| **Eval Judge** | `gemini-2.5-flash-lite` | Stronger reasoning model used exclusively for RAGAS evaluation. |
-| **Embeddings** | `gemini-embedding-001` | High semantic density for technical compliance text. |
-| **Vector DB** | Qdrant Cloud | High-performance vector search with metadata filtering support. |
-| **API** | FastAPI (Async) | Supports Server-Sent Events (SSE) for real-time token streaming via NDJSON. |
+| Component | Technology |
+| :--- | :--- |
+| **Orchestration** | LangGraph (stateful CRAG graph) |
+| **LLM** | `gemini-2.5-flash-lite` |
+| **Embeddings** | `gemini-embedding-001` |
+| **Vector DB** | Qdrant Cloud (payload-indexed per framework) |
+| **API** | FastAPI + SSE streaming |
+| **Frontend** | Next.js 16, Tailwind CSS v4, Framer Motion |
+| **Deployment** | Render.com (backend) + Vercel (frontend) |
 
 ---
 
 ## 📊 Evaluation Results (RAGAS)
 
-| Metric | Score | Status |
-| :--- | :--- | :--- |
-| **Faithfulness** | `1.0000` | ✅ |
-| **Answer Relevancy** | `0.7574` | ✅ |
-| **Context Precision** | `0.7838` | ✅ |
-| **Context Recall** | `0.9000` | ✅ |
+| Metric | Score |
+| :--- | :--- |
+| **Faithfulness** | `1.0000` ✅ |
+| **Answer Relevancy** | `0.7574` ✅ |
+| **Context Precision** | `0.7838` ✅ |
+| **Context Recall** | `0.9000` ✅ |
 
-> [!TIP]
-> **View the [Full Report](evals/ragas_report.md)** for detailed per-question analysis.
+> See [evals/ragas_report.md](evals/ragas_report.md) for full per-question breakdown.
 
-### Key Metrics Defined:
-1.  **Faithfulness**: Measures if the answer is derived strictly from the retrieved context.
-2.  **Answer Relevancy**: Assesses how well the response addresses the user's intent.
-3.  **Context Precision**: Evaluates the signal-to-noise ratio in retrieved chunks.
-4.  **Context Recall**: Checks if all necessary information was actually retrieved.
+---
+
+## 📚 Knowledge Base
+
+| Framework | Focus |
+| :--- | :--- |
+| **NIST CSF 2.0** | High-level cybersecurity framework (Identify, Protect, Detect, Respond, Recover) |
+| **NIST SP 800-53** | Detailed security & privacy controls catalog for federal systems |
+| **ISO 27001:2022** | International ISMS standard — risk-based approach to information security |
+| **SOC 2 TSC** | AICPA Trust Services Criteria — security, availability, confidentiality, privacy |
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-audit-ai-backend/
+audit-ai/
 ├── src/audit_ai/
-│   ├── config.py       # Centralized API keys, model names & configuration
-│   ├── engine.py       # Core LangGraph logic — state, nodes & router
-│   ├── ingestion.py    # PDF processing & vector ingestion pipeline
-│   └── main.py         # FastAPI application, SSE streaming & entry point
-├── evals/
-│   ├── collector.py    # Dataset collection from the live RAG engine
-│   ├── evaluator.py    # RAGAS evaluation runner & report generator
-│   ├── rag_results.json# Raw answers collected during eval run
-│   ├── ragas_report.md # Generated evaluation report (human-readable)
-│   └── test.csv        # NIST compliance test dataset (Ground Truth Q&A)
-├── data/               # Raw NIST PDF documents for ingestion
-├── Dockerfile          # Multi-stage production build (Python 3.12)
-├── docker-compose.yml  # Local container orchestration
-├── render.yaml         # Render.com deployment configuration
-└── pyproject.toml      # Project metadata & dependencies (uv/hatchling)
+│   ├── config.py            # API keys, model names, tuning knobs
+│   ├── rag/
+│   │   ├── engine.py        # LangGraph CRAG graph, router, semantic cache
+│   │   └── ingestion.py     # Multi-PDF ingestion with Qdrant payload index
+│   └── api/
+│       └── main.py          # FastAPI app, SSE streaming, source filtering
+├── frontend/                # Next.js frontend
+├── evals/                   # RAGAS evaluation pipeline
+├── data/                    # PDF knowledge base (4 frameworks)
+├── docker-compose.yml
+├── render.yaml
+└── pyproject.toml
 ```
 
 ---
@@ -99,56 +107,45 @@ audit-ai-backend/
 ## 🚀 Getting Started
 
 ### Prerequisites
-Obtain the following API keys and add them to your `.env` file:
 
-| Variable | Source |
-| :--- | :--- |
-| `GOOGLE_API_KEY` | [Google AI Studio](https://aistudio.google.com/app/apikey) |
-| `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) |
-| `QDRANT_URL` | [Qdrant Cloud](https://cloud.qdrant.io) |
-| `QDRANT_API_KEY` | [Qdrant Cloud](https://cloud.qdrant.io) |
+Create `.env` in project root:
 
-### Installation
+```bash
+GOOGLE_API_KEY=<key from https://aistudio.google.com/app/apikey>
+QDRANT_URL=<your Qdrant Cloud URL>
+QDRANT_API_KEY=<your Qdrant Cloud API key>
+```
 
-1.  **Install dependencies** using [uv](https://github.com/astral-sh/uv):
-    ```bash
-    uv sync
-    ```
-2.  **Set up environment variables**:
-    ```bash
-    cp .env.example .env
-    # then fill in your keys
-    ```
+### Install & Run
 
-### Execution
+```bash
+# Install dependencies (uses uv)
+uv sync
 
-*   **Run the backend server**:
-    ```bash
-    uv run python src/audit_ai/main.py
-    ```
-    The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
+# Ingest PDFs into Qdrant (place PDFs in data/ first)
+uv run python src/audit_ai/rag/ingestion.py
 
-*   **Ingest documents** into Qdrant:
-    ```bash
-    uv run python src/audit_ai/ingestion.py
-    ```
+# Start backend
+uv run uvicorn audit_ai.api.main:app --reload
+# → http://localhost:8000
 
-*   **Generate an Evaluation Report**:
-    ```bash
-    # Step 1: Collect answers from the live RAG engine
-    uv run python evals/collector.py
+# Start frontend (from frontend/)
+npm install && npm run dev
+# → http://localhost:3000
+```
 
-    # Step 2: Run RAGAS evaluation & generate the report
-    uv run python evals/evaluator.py
-    ```
+### Evaluation
+
+```bash
+uv sync --group evals
+uv run python evals/collector.py   # collect answers
+uv run python evals/evaluator.py   # run RAGAS → ragas_report.md
+```
 
 ---
 
 ## 🛠️ Deployment
 
-*   **Containerization**: Optimized with multi-stage Docker builds using Python 3.12.
-    ```bash
-    docker-compose up --build
-    ```
-*   **Cloud (Render)**: Deployment is configured via `render.yaml` for zero-config deploys on [Render.com](https://render.com).
-*   **Entry point**: `uvicorn audit_ai.main:app --host 0.0.0.0 --port 8000`
+- **Backend**: Render.com via `render.yaml` — `uvicorn audit_ai.api.main:app --host 0.0.0.0 --port 8000`
+- **Frontend**: Vercel — set `NEXT_PUBLIC_API_URL` to your Render backend URL
+- **Docker**: `docker-compose up --build`
