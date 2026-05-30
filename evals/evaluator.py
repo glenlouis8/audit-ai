@@ -91,10 +91,7 @@ def run_ragas_eval():
 
     print(f"📂 Loaded {len(raw_data)} records from {RESULTS_FILE}")
 
-    # Evaluate only the first 10 records to stay within Gemini's free-tier token
-    # budget. The full dataset is preserved in rag_results.json for future use.
-    raw_data = raw_data[:10]
-    print(f"⚠️  Running on {len(raw_data)} records...")
+    print(f"🔍 Running on all {len(raw_data)} records...")
 
     dataset = Dataset.from_dict({
         "question": [e["question"] for e in raw_data],

@@ -151,30 +151,68 @@ _FRAMEWORK_FILES = [
     "trust-services-criteria.pdf",
 ]
 
+_FRAMEWORK_KEYWORDS = {
+    "nist_framework.pdf": [
+        "csf", "cybersecurity framework", "nist csf", "nist framework",
+        "govern function", "identify function", "protect function", "detect function",
+        "respond function", "recover function", "framework profile", "framework tier",
+        "organizational profile", "community profile",
+    ],
+    "NIST.SP.800-53r5.pdf": [
+        "800-53", "sp 800", "nist sp", "ac-", "au-", "ca-", "cm-", "cp-",
+        "ia-", "ir-", "ma-", "mp-", "pe-", "pl-", "pm-", "ps-", "pt-",
+        "ra-", "sa-", "sc-", "si-", "sr-", "control family", "safeguarding measures",
+        "security control", "privacy control",
+    ],
+    "ISO_IEC-270012022-ed.3.pdf": [
+        "iso 27001", "iso/iec 27001", "27001", "isms", "information security management system",
+        "annex a", "clause 4", "clause 5", "clause 6", "clause 7", "clause 8",
+        "clause 9", "clause 10", "risk treatment", "statement of applicability",
+    ],
+    "trust-services-criteria.pdf": [
+        "soc 2", "trust services", "tsc", "common criteria", "cc1", "cc2", "cc3",
+        "cc4", "cc5", "cc6", "cc7", "cc8", "cc9", "availability criteria",
+        "processing integrity", "confidentiality criteria", "privacy criteria", "aicpa",
+    ],
+}
 
-def _search_framework(query: str, filename: str) -> List:
+
+def _detect_frameworks(query: str) -> List[str]:
+    query_lower = query.lower()
+    matched = [
+        fname for fname, keywords in _FRAMEWORK_KEYWORDS.items()
+        if any(kw in query_lower for kw in keywords)
+    ]
+    return matched if matched else _FRAMEWORK_FILES
+
+
+def _search_framework(query: str, filename: str, k: int) -> List:
     from qdrant_client.models import Filter, FieldCondition, MatchValue
     vs = _get_vector_store()
     qdrant_filter = Filter(
         must=[FieldCondition(key="metadata.filename", match=MatchValue(value=filename))]
     )
-    return vs.similarity_search(query, k=RETRIEVAL_K, filter=qdrant_filter)
+    return vs.similarity_search(query, k=k, filter=qdrant_filter)
 
 
 def retrieve(state: GraphState):
     print("---RETRIEVE NODE---")
     query = state.get("search_query") or state["question"]
 
+    target_frameworks = _detect_frameworks(query)
+    k_per_framework = max(RETRIEVAL_K, round(16 / len(target_frameworks)))
+    print(f"---TARGETING {len(target_frameworks)} framework(s): {[f.split('.')[0] for f in target_frameworks]} (k={k_per_framework} each)---")
+
     documents = []
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {executor.submit(_search_framework, query, fname): fname for fname in _FRAMEWORK_FILES}
+    with ThreadPoolExecutor(max_workers=len(target_frameworks)) as executor:
+        futures = {executor.submit(_search_framework, query, fname, k_per_framework): fname for fname in target_frameworks}
         for future in as_completed(futures):
             try:
                 documents.extend(future.result())
             except Exception as e:
                 print(f"---RETRIEVE ERROR ({futures[future]}): {e}---")
 
-    print(f"---RETRIEVED {len(documents)} chunks across {len(_FRAMEWORK_FILES)} frameworks---")
+    print(f"---RETRIEVED {len(documents)} chunks---")
     return {"documents": documents, "question": state["question"]}
 
 
@@ -266,11 +304,12 @@ async def generate(state: GraphState, config: RunnableConfig):
         ("system",
             "You are a strict Compliance Auditor AI. "
             "Answer the user's question using ONLY the context provided below. "
+            "Do NOT describe what you are doing, do NOT explain your reasoning process, do NOT say 'the user is asking' or 'I need to find'. Start your answer directly. "
             "Quote the relevant text from the source directly and verbatim — do not paraphrase or summarize. "
             "Use block quotes (>) for exact excerpts, then briefly note the source name and page if available. "
             "If multiple passages are relevant, quote each one. "
             "If the documents conflict, point out the difference. "
-            "If the context is empty, simply state that the specific information is missing from the database.\n\n"
+            "If the context does not contain the answer, state: 'The provided context does not contain information about [topic].'\n\n"
             "Context:\n{context}"
         ),
         MessagesPlaceholder(variable_name="history"),
@@ -376,7 +415,9 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
         "2. 'search': Specific, serious questions about cybersecurity compliance frameworks including NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2, organizational policies, security controls, or audit requirements. \n\n"
         "{history_context}"
         "Input: {query} \n"
-        "If you are even slightly unsure if it is a compliance query, return 'chat'. \n"
+        "If the question asks about requirements, controls, functions, criteria, clauses, or policies of any framework — return 'search'. \n"
+        "Only return 'chat' if the input is clearly a greeting, identity check, or completely unrelated to cybersecurity compliance. \n"
+        "When in doubt, return 'search'. \n"
         "Return ONLY one word: 'chat' or 'search'."
     )
 
