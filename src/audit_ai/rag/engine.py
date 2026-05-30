@@ -162,12 +162,18 @@ _FRAMEWORK_KEYWORDS = {
         "800-53", "sp 800", "nist sp", "ac-", "au-", "ca-", "cm-", "cp-",
         "ia-", "ir-", "ma-", "mp-", "pe-", "pl-", "pm-", "ps-", "pt-",
         "ra-", "sa-", "sc-", "si-", "sr-", "control family", "safeguarding measures",
-        "security control", "privacy control",
+        "security control", "privacy control", "audit and accountability",
+        "access control family", "incident response family", "physical and environmental",
+        "risk assessment family", "system and communications", "configuration management",
+        "identification and authentication", "contingency planning",
     ],
     "ISO_IEC-270012022-ed.3.pdf": [
         "iso 27001", "iso/iec 27001", "27001", "isms", "information security management system",
         "annex a", "clause 4", "clause 5", "clause 6", "clause 7", "clause 8",
         "clause 9", "clause 10", "risk treatment", "statement of applicability",
+        "certification", "audit programme", "management review", "nonconformity",
+        "continual improvement", "internal audit", "information security policy",
+        "leadership", "top management",
     ],
     "trust-services-criteria.pdf": [
         "soc 2", "trust services", "tsc", "common criteria", "cc1", "cc2", "cc3",
@@ -200,7 +206,7 @@ def retrieve(state: GraphState):
     query = state.get("search_query") or state["question"]
 
     target_frameworks = _detect_frameworks(query)
-    k_per_framework = max(RETRIEVAL_K, round(16 / len(target_frameworks)))
+    k_per_framework = max(RETRIEVAL_K, round(12 / len(target_frameworks)))
     print(f"---TARGETING {len(target_frameworks)} framework(s): {[f.split('.')[0] for f in target_frameworks]} (k={k_per_framework} each)---")
 
     documents = []
@@ -241,9 +247,15 @@ async def grade_documents(state: GraphState):
         *[chain.ainvoke({"question": question, "context": doc.page_content}) for doc in documents]
     )
 
-    score = "yes" if any("yes" in g.lower() for g in grades) else "no"
-    print(f"---RESULT: Documents relevant? {score.upper()}---")
-    return {"grade": score}
+    relevant_docs = [doc for doc, g in zip(documents, grades) if "yes" in g.lower()]
+    score = "yes" if relevant_docs else "no"
+    print(f"---RESULT: {len(relevant_docs)}/{len(documents)} chunks relevant---")
+
+    # Only update documents if we found relevant ones — keep originals for transform_query retry
+    update = {"grade": score}
+    if relevant_docs:
+        update["documents"] = relevant_docs
+    return update
 
 
 def transform_query(state: GraphState):

@@ -12,12 +12,7 @@ import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
 from ragas.run_config import RunConfig
-from ragas.metrics import (
-    Faithfulness,
-    AnswerRelevancy,
-    ContextPrecision,
-    ContextRecall,
-)
+from ragas.metrics import Faithfulness, AnswerRelevancy, ContextPrecision, ContextRecall
 from audit_ai.config import EVAL_JUDGE_MODEL, GOOGLE_API_KEY, EMBEDDING_MODEL
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 import numpy as np
@@ -93,9 +88,12 @@ def run_ragas_eval():
 
     print(f"🔍 Running on all {len(raw_data)} records...")
 
+    # Truncate long answers to prevent RAGAS 0.4.x OutputParserException
+    # caused by too many statements overflowing the Pydantic StringIO parser.
+    MAX_ANSWER_CHARS = 2000
     dataset = Dataset.from_dict({
         "question": [e["question"] for e in raw_data],
-        "answer": [e["answer"] for e in raw_data],
+        "answer": [e["answer"][:MAX_ANSWER_CHARS] for e in raw_data],
         "contexts": [e["contexts"] for e in raw_data],
         "ground_truth": [e["ground_truth"] for e in raw_data],
     })
@@ -114,9 +112,6 @@ def run_ragas_eval():
     )
 
     print(f"🚀 Starting RAGAS Evaluation using {EVAL_JUDGE_MODEL}...")
-    # raise_exceptions=False allows partial results when a single metric fails,
-    # rather than aborting the entire evaluation run.
-    # max_workers=1 serialises requests to avoid rate limit bursts.
     results = evaluate(
         dataset=dataset,
         metrics=[
