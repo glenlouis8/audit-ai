@@ -192,7 +192,7 @@ export default function ChatInterface() {
         
         {/* COLD START WARNING (Only shows if there is 1 message) */}
         {messages.length === 1 && (
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center justify-center mb-6"
@@ -200,9 +200,39 @@ export default function ChatInterface() {
                 <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 px-4 py-3 rounded-lg flex items-center gap-3 max-w-lg shadow-lg">
                     <Server size={20} className="text-yellow-500 flex-shrink-0 animate-pulse" />
                     <p className="text-xs sm:text-sm">
-                        <span className="font-bold text-yellow-400">Server Notice:</span> This demo runs on free cloud infrastructure. 
+                        <span className="font-bold text-yellow-400">Server Notice:</span> This demo runs on free cloud infrastructure.
                         The first request may take <span className="font-bold text-white">45-60 seconds</span> to wake up the server. Please be patient!
                     </p>
+                </div>
+            </motion.div>
+        )}
+
+        {/* SUGGESTED QUESTIONS (Only shows if there is 1 message) */}
+        {messages.length === 1 && (
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-col items-center gap-3 mb-8"
+            >
+                <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Try asking</p>
+                <div className="flex flex-wrap gap-2 justify-center max-w-2xl">
+                  {[
+                    "What are the cryptographic controls in NIST SP 800-53?",
+                    "Compare NIST CSF 2.0 and ISO 27001 for access control",
+                    "What does SOC 2 require for availability?",
+                    "How do NIST and SOC 2 address incident response?",
+                    "What are ISO 27001 risk assessment requirements?",
+                  ].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => { setQuery(q); inputRef.current?.focus(); }}
+                      disabled={isLoading}
+                      className="px-3 py-2 text-xs text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-emerald-500/40 hover:text-white transition-all text-left"
+                    >
+                      {q}
+                    </button>
+                  ))}
                 </div>
             </motion.div>
         )}
@@ -292,6 +322,13 @@ export default function ChatInterface() {
                           "ISO 27001:2022": `https://www.iso.org/standard/82875.html`,
                           "SOC 2 TSC": `https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022`,
                         };
+                        const frameworkColors: Record<string, { border: string; text: string; bg: string; hover: string }> = {
+                          "NIST CSF 2.0":  { border: "border-emerald-500/40", text: "text-emerald-400", bg: "bg-emerald-500/10", hover: "hover:border-emerald-500/70" },
+                          "NIST SP 800-53":{ border: "border-blue-500/40",    text: "text-blue-400",    bg: "bg-blue-500/10",    hover: "hover:border-blue-500/70" },
+                          "ISO 27001:2022":{ border: "border-violet-500/40",  text: "text-violet-400",  bg: "bg-violet-500/10",  hover: "hover:border-violet-500/70" },
+                          "SOC 2 TSC":     { border: "border-orange-500/40",  text: "text-orange-400",  bg: "bg-orange-500/10",  hover: "hover:border-orange-500/70" },
+                        };
+                        const colors = frameworkColors[source.file] ?? { border: "border-white/10", text: "text-gray-400", bg: "bg-white/5", hover: "hover:border-white/30" };
                         const officialUrl = frameworkUrls[source.file] ?? "#";
 
                         return (
@@ -300,16 +337,16 @@ export default function ChatInterface() {
                           href={officialUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="
-                            flex-shrink-0 w-72 p-4 rounded-xl border border-white/10 bg-[#18181b] 
-                            hover:border-emerald-500/50 hover:bg-[#202025] transition-all cursor-pointer group
+                          className={`
+                            flex-shrink-0 w-72 p-4 rounded-xl border bg-[#18181b]
+                            ${colors.border} ${colors.hover} hover:bg-[#202025] transition-all cursor-pointer group
                             flex flex-col justify-between h-full
-                          "
+                          `}
                         >
                           <div>
                             <div className="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-emerald-400">
+                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${colors.text} ${colors.bg}`}>
                                         {source.file}
                                     </span>
                                 </div>
@@ -321,8 +358,8 @@ export default function ChatInterface() {
                             "{source.text}"
                             </p>
                           </div>
-                          
-                          <div className="mt-3 flex items-center gap-1 text-[10px] text-emerald-600 font-bold uppercase tracking-wide group-hover:text-emerald-400">
+
+                          <div className={`mt-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide ${colors.text} opacity-60 group-hover:opacity-100`}>
                             <span>View Source PDF</span>
                             <ChevronRight size={10} />
                           </div>
