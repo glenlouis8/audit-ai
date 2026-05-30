@@ -61,12 +61,14 @@ Server-Sent Events via FastAPI `StreamingResponse` with NDJSON:
 
 ## 📊 Evaluation Results (RAGAS)
 
+Evaluated across 33 questions spanning all 4 frameworks + cross-framework comparison queries.
+
 | Metric | Score |
 | :--- | :--- |
-| **Faithfulness** | `1.0000` ✅ |
-| **Answer Relevancy** | `0.7574` ✅ |
-| **Context Precision** | `0.7838` ✅ |
-| **Context Recall** | `0.9000` ✅ |
+| **Faithfulness** | `0.8761` ✅ |
+| **Answer Relevancy** | `0.7088` ✅ |
+| **Context Precision** | `0.4734` ⚠️ |
+| **Context Recall** | `0.8636` ✅ |
 
 > See [evals/ragas_report.md](evals/ragas_report.md) for full per-question breakdown.
 
