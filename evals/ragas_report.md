@@ -1,16 +1,16 @@
 # 📊 AuditAI: RAG Evaluation Report
 
-Generated on: 2026-05-30 19:38:13
+Generated on: 2026-05-30 20:26:19
 
 ## 🏛️ Executive Summary
 Below are the average scores across all evaluated metrics.
 
 | Metric | Score | Status |
 | :--- | :--- | :--- |
-| **Faithfulness** | `0.8737` | ✅ Passing |
-| **Answer Relevancy** | `0.6985` | ⚠️ Needs Review |
-| **Context Precision** | `0.4975` | ⚠️ Needs Review |
-| **Context Recall** | `0.8030` | ✅ Passing |
+| **Faithfulness** | `0.9152` | ✅ Passing |
+| **Answer Relevancy** | `0.7400` | ✅ Passing |
+| **Context Precision** | `0.5250` | ⚠️ Needs Review |
+| **Context Recall** | `0.8535` | ✅ Passing |
 
 ---
 
@@ -28,9 +28,9 @@ Below are the average scores across all evaluated metrics.
 **Ground Truth:** The 6 functions of the NIST CSF 2.0 are Govern, Identify, Protect, Detect, Respond, and Recover.
 
 **Scores:**
-- Faithfulness: `0.1429`
-- Answer Relevancy: `0.7628`
-- Context Precision: `0.4778`
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.7636`
+- Context Precision: `0.5179`
 - Context Recall: `1.0000`
 
 ---
@@ -56,9 +56,9 @@ Below are the average scores across all evaluated metrics.
 **Ground Truth:** The Govern function establishes and monitors the organization's cybersecurity risk management strategy, expectations, and policy.
 
 **Scores:**
-- Faithfulness: `1.0000`
+- Faithfulness: `N/A`
 - Answer Relevancy: `0.7894`
-- Context Precision: `0.9571`
+- Context Precision: `0.9276`
 - Context Recall: `1.0000`
 
 ---
@@ -95,7 +95,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7825`
+- Answer Relevancy: `0.7921`
 - Context Precision: `0.8667`
 - Context Recall: `1.0000`
 
@@ -114,7 +114,7 @@ Below are the average scores across all evaluated metrics.
 [Source: NIST CSF 2.0, Page 26]
 
 > • Incident Recovery Plan Execution (RC.RP): Restoration activities are performed to ensure operational availability of systems and services affected by cybersecurity incidents
-[Source: NIST CSF 2.0, Page 26]
+[Source: NIST CSF 2.0, Page 27]
 
 > • Inc ident Recovery Communication (RC.CO): Restoration activities are coordinated with internal and external parties
 [Source: NIST CSF 2.0, Page 27]
@@ -123,7 +123,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7441`
+- Answer Relevancy: `0.7332`
 - Context Precision: `0.8875`
 - Context Recall: `1.0000`
 
@@ -132,16 +132,15 @@ Below are the average scores across all evaluated metrics.
 ### Question 6
 **Question:** What is a Framework Profile?
 
-**AI Answer:** > A CSF Organizational Profile describes an organization’s current and/or target cybersecurity posture in terms of the Core’s outcomes. Organizational Profiles are used to understand, tailor, assess, prioritize, and communicate the Core’s outcomes by considering an organization’s mission objectives, stakeholder expectations, threat landscape, and requirements.
->
-> [Source: NIST CSF 2.0, Page 10]
+**AI Answer:** > A CSF Organizational Profile describes an organization’s current and/or target cybersecurity posture in terms of the Core’s outcomes.
+[Source: NIST CSF 2.0, Page 10]
 
 **Ground Truth:** A Framework Profile describes an organization's current or target cybersecurity posture in terms of the Core's outcomes, tailored to its mission, risk appetite, and resources.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7065`
-- Context Precision: `0.7183`
+- Answer Relevancy: `0.7094`
+- Context Precision: `0.6847`
 - Context Recall: `1.0000`
 
 ---
@@ -161,8 +160,8 @@ Below are the average scores across all evaluated metrics.
 **Ground Truth:** Framework Tiers characterize the rigor of an organization's cybersecurity risk governance and management practices across four levels: Partial, Risk Informed, Repeatable, and Adaptive.
 
 **Scores:**
-- Faithfulness: `1.0000`
-- Answer Relevancy: `0.7446`
+- Faithfulness: `N/A`
+- Answer Relevancy: `0.7472`
 - Context Precision: `0.5556`
 - Context Recall: `1.0000`
 
@@ -178,7 +177,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `0.8889`
-- Answer Relevancy: `0.7586`
+- Answer Relevancy: `0.7567`
 - Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
@@ -188,21 +187,21 @@ Below are the average scores across all evaluated metrics.
 **Question:** What is the Protect function?
 
 **AI Answer:** > PROTECT (PR) — Safeguards to manage the organization’s cybersecurity risks are used. Once assets and risks are identified and prioritized, PROTECT supports the ability to secure those assets to prevent or lower the likelihood and impact of adverse cybersecurity events, as well as to increase the likelihood and impact of taking advantage of opportunities. Outcomes covered by this Function include identity management, authentication, and access control; awareness and training; data security; platform security (i.e., securing the hardware, software, and services of physical and virtual platforms); and the resilience of technology infrastructure.
-[NIST CSF 2.0, Page 8]
+[Source: NIST CSF 2.0, Page 8]
 
 > PROTECT (PR): Safeguards to manage the organization’s cybersecurity risks are used
-[NIST CSF 2.0, Page 23]
+[Source: NIST CSF 2.0, Page 23]
 
-> The highest level of organization for cybersecurity outcomes. There are six CSF Functions: Govern, Identify, Protect, Detect, Respond, and Recover.
-[NIST CSF 2.0, Page 30]
+> PROTECT (PR): Safeguards to manage the organization’s cybersecurity risks are used
+[Source: NIST CSF 2.0, Page 23]
 
 **Ground Truth:** The Protect function focuses on implementing appropriate safeguards to ensure the delivery of critical infrastructure services and to limit or contain the impact of a potential cybersecurity event.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7466`
-- Context Precision: `1.0000`
-- Context Recall: `1.0000`
+- Answer Relevancy: `0.7448`
+- Context Precision: `0.9167`
+- Context Recall: `0.0000`
 
 ---
 
@@ -218,18 +217,21 @@ Below are the average scores across all evaluated metrics.
 > The Cybersecurity Framework (CSF) 2.0 is designed to help organizations of all sizes and sectors — including industry, government, academia, and nonprofit — to manage and reduce their cybersecurity risks. It is useful regardless of the maturity level and technical sophistication of an organization’s cybersecurity programs.
 > NIST CSF 2.0, Page 4
 
+> The CSF provides guidance to industry, government agencies, and other organizations to manage cybersecurity risks. It offers a taxonomy of high-level cybersecurity outcomes that can be used by any organization — regardless of its size, sector, or maturity — to better understand, assess, prioritize, and communicate its cybersecurity efforts.
+> NIST CSF 2.0, Page 1
+
 > The CSF describes desired outcomes that are intended to be understood by a broad audience, including executives, managers, and practitioners, regardless of their cybersecurity expertise.
 > NIST CSF 2.0, Page 4
 
-> The CSF Core, the nucleus of the CSF, which is a taxonomy of high-level cybersecurity outcomes that can help any organization manage its cybersecurity risks. The CSF Core components are a hierarchy of Functions, Categories, and Subcategories that detail each outcome. These outcomes can be understood by a broad audience, including executives, managers, and practitioners, regardless of their cybersecurity expertise.
+> These outcomes can be understood by a broad audience, including executives, managers, and practitioners, regardless of their cybersecurity expertise.
 > NIST CSF 2.0, Page 5
 
 **Ground Truth:** The Framework is designed to be used by organizations of all sizes and sectors to manage cybersecurity risk, ranging from executive leadership to practitioners.
 
 **Scores:**
-- Faithfulness: `1.0000`
-- Answer Relevancy: `0.7570`
-- Context Precision: `0.9750`
+- Faithfulness: `N/A`
+- Answer Relevancy: `0.7486`
+- Context Precision: `0.7806`
 - Context Recall: `1.0000`
 
 ---
@@ -250,8 +252,8 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.8112`
-- Context Precision: `0.8110`
+- Answer Relevancy: `0.8126`
+- Context Precision: `0.7651`
 - Context Recall: `1.0000`
 
 ---
@@ -260,15 +262,24 @@ Below are the average scores across all evaluated metrics.
 **Question:** What is control SC-13 in NIST SP 800-53?
 
 **AI Answer:** > SC-13 Cryptographic Protection S
+> SC-13(1) FIPS-VALIDATED CRYPTOGRAPHY W: Incorporated into SC-13.
+> SC-13(2) NSA-APPROVED CRYPTOGRAPHY W: Incorporated into SC-13.
+> SC-13(3) INDIVIDUALS WITHOUT FORMAL ACCESS APPROVALS W: Incorporated into SC-13.
+> SC-13(4) DIGITAL SIGNATURES W: Incorporated into SC-13.
 [Source: NIST SP 800-53, Page 485]
+
+> SC-13 CRYPTOGRAPHIC PROTECTION
+> Control:
+> a. Determine the [Assignment: organization-defined cryptographic uses]; and
+[Source: NIST SP 800-53, Page 334]
 
 **Ground Truth:** SC-13 is the Cryptographic Protection control, which requires organizations to determine cryptographic uses and implement required types of cryptography for each use.
 
 **Scores:**
-- Faithfulness: `0.6667`
-- Answer Relevancy: `0.8211`
-- Context Precision: `0.0000`
-- Context Recall: `0.0000`
+- Faithfulness: `0.7500`
+- Answer Relevancy: `0.8256`
+- Context Precision: `0.5000`
+- Context Recall: `1.0000`
 
 ---
 
@@ -292,14 +303,23 @@ Below are the average scores across all evaluated metrics.
 **Question:** What is the purpose of the RA control family in NIST SP 800-53?
 
 **AI Answer:** > RA Risk Assessment
-> [Source: NIST SP 800-53, Page 34]
+>
+> Families of controls contain base controls and control enhancements, which are directly related to their base controls. Control enhancements either add functionality or specificity to a base control or increase the strength of a base control. Control enhancements are used in systems and environments of operation that require greater protection than the protection provided by the base control. The need for organizations to select and implement control enhancements is due to the potential adverse organizational or individual impacts or when organizations require
+[Source: NIST SP 800-53, Page 34]
+
+> TABLE 1: SECURITY AND PRIVACY CONTROL FAMILIES
+> ID FAMILY ID FAMILY
+> ...
+> CP Contingency Planning RA Risk Assessment
+> ...
+[Source: NIST SP 800-53, Page 34]
 
 **Ground Truth:** The RA (Risk Assessment) family requires organizations to conduct risk assessments, identify vulnerabilities, and maintain a risk register.
 
 **Scores:**
-- Faithfulness: `0.5000`
-- Answer Relevancy: `0.7953`
-- Context Precision: `0.0000`
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.8016`
+- Context Precision: `0.1000`
 - Context Recall: `0.0000`
 
 ---
@@ -349,7 +369,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7435`
+- Answer Relevancy: `0.7950`
 - Context Precision: `0.1964`
 - Context Recall: `1.0000`
 
@@ -410,7 +430,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.6943`
+- Answer Relevancy: `0.6637`
 - Context Precision: `0.0909`
 - Context Recall: `1.0000`
 
@@ -446,14 +466,26 @@ Below are the average scores across all evaluated metrics.
 > infrastructure that can record details about actions that affect system security (e.g., an audit
 > (NIST SP 800-53, Page 292)
 
+> TABLE C-3: AUDIT AND ACCOUNTABILITY FAMILY
+> CONTROL
+> NUMBER
+> CONTROL NAME
+> CONTROL ENHANCEMENT NAME
+> IMPLEMENTED
+> BY
+> ASSURANCE
 > AU-1 Policy and Procedures O √
+> AU-2 Event Logging O
+> AU-3 Content of Audit Records S
 > (NIST SP 800-53, Page 460)
+
+> a. Id
 
 **Ground Truth:** The AU family requires organizations to create and retain system audit logs, protect audit information, review logs, and generate reports to enable monitoring of system activity.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7840`
+- Answer Relevancy: `0.7695`
 - Context Precision: `0.0000`
 - Context Recall: `1.0000`
 
@@ -464,13 +496,15 @@ Below are the average scores across all evaluated metrics.
 
 **AI Answer:** > This document specifies the requirements for establishing, implementing, maintaining and continually improving an information security management system within the context of the organization. This document also includes requirements for the assessment and treatment of information security risks tailored to the needs of the organization. The requirements set out in this document are generic and are intended to be applicable to all organizations, regardless of type, size or nature.
 >
+> Excluding any of the requirements specified in Clauses 4 to 10 is not acceptable when an organization claims conformity to this document.
+>
 > ISO 27001:2022, Page 6
 
 **Ground Truth:** ISO 27001:2022 specifies requirements for establishing, implementing, maintaining, and continually improving an Information Security Management System (ISMS) within the context of the organization.
 
 **Scores:**
-- Faithfulness: `1.0000`
-- Answer Relevancy: `0.7349`
+- Faithfulness: `0.9286`
+- Answer Relevancy: `0.7581`
 - Context Precision: `0.8056`
 - Context Recall: `1.0000`
 
@@ -500,13 +534,13 @@ Below are the average scores across all evaluated metrics.
 > 2) prioritize the analysed risks for risk treatment.
 > The organization shall retain documented information about the information security risk assessment
 > process.
-> 8.2 Information security risk assessment
+> ISO 27001:2022, Page 9
+
 > The organization shall perform information security risk assessments at planned intervals or when
 > significant changes are proposed or occur, taking account of the criteria established in 6.1.2 a).
 > The organization shall retain documented information of the results of the information security risk
 > assessments.
-[Source: ISO 27001:2022, Page 9]
-[Source: ISO 27001:2022, Page 13]
+> ISO 27001:2022, Page 13
 
 **Ground Truth:** ISO 27001 requires organizations to define a risk assessment process, identify risks to confidentiality, integrity and availability, analyze and evaluate risks, and retain documented results.
 
@@ -521,15 +555,45 @@ Below are the average scores across all evaluated metrics.
 ### Question 20
 **Question:** What are the leadership requirements in ISO 27001?
 
-**AI Answer:** ISO 27001:2022, specifically in clause 5, "Leadership," requires top management to demonstrate leadership and commitment to the information security management system (ISMS). This includes establishing the information security policy and ensuring that ISMS objectives are set and are compatible with the strategic direction of the organization. Top management must also ensure the integration of the ISMS requirements into the organization's business processes and the promotion of the process approach and risk-based thinking.
+**AI Answer:** > Top management shall demonstrate leadership and commitment with respect to the information security management system by:
+> a) ensuring the information security policy and the information security objectives are established
+> and are compatible with the strategic direction of the organization;
+> b) ensuring the integration of the information security management system requirements into the
+> organization’s processes;
+> c) ensuring that the resources needed for the information security management system are available;
+> d) communicating the importance of effective information security management and of conforming
+> to the information security management system requirements;
+> e) ensuring that the information security management system achieves its intended outcome(s);
+> f) directing and supporting persons to contribute to the effectiveness of the information security
+> management system;
+> g) promoting continual improvement; and
+> h) supporting other relevant management roles to demonstrate their leadership as it applies to their
+> areas of responsibility.
+[Source: ISO 27001:2022, Page 7]
+
+> Top management shall establish an information security policy that:
+> a) is appropriate to the purpose of the organization;
+> b) includes information security objectives (see 6.2) or provides the framework for setting information
+> security objectives;
+> c) includes a commitment to satisfy applicable requirements related to information security;
+> d) includes a commitment to continual improvement of the information security management system.
+> The information security policy shall:
+> e) be available as documented information;
+> f) be communicated within the organization;
+> g) be available to interested parties, as appropriate.
+[Source: ISO 27001:2022, Page 8]
+
+> Top management shall ensure that the responsibilities and authorities for roles relevant to information
+> security are assigned and communicated within the organization.
+> Top management shall assign the responsibility
 
 **Ground Truth:** ISO 27001 requires top management to demonstrate leadership by establishing an information security policy, ensuring ISMS integration into business processes, and promoting continual improvement.
 
 **Scores:**
-- Faithfulness: `1.0000`
-- Answer Relevancy: `0.8069`
-- Context Precision: `0.0000`
-- Context Recall: `0.0000`
+- Faithfulness: `0.9545`
+- Answer Relevancy: `0.7779`
+- Context Precision: `0.8333`
+- Context Recall: `1.0000`
 
 ---
 
@@ -538,13 +602,15 @@ Below are the average scores across all evaluated metrics.
 
 **AI Answer:** > 6 Planning
 > 6.1 Actions to address risks and opportunities
-ISO 27001:2022, Page 2
+> 6.1.1 General
+> 6.1.2 Information security risk assessment
+[Source: ISO 27001:2022, Page 2]
 
 **Ground Truth:** Clause 6.1 covers actions to address risks and opportunities, including the information security risk assessment and risk treatment processes.
 
 **Scores:**
-- Faithfulness: `0.7500`
-- Answer Relevancy: `0.6708`
+- Faithfulness: `0.8000`
+- Answer Relevancy: `0.6864`
 - Context Precision: `0.6389`
 - Context Recall: `1.0000`
 
@@ -560,7 +626,7 @@ ISO 27001:2022, Page 2
 **Scores:**
 - Faithfulness: `0.0000`
 - Answer Relevancy: `0.0000`
-- Context Precision: `0.5000`
+- Context Precision: `0.3500`
 - Context Recall: `1.0000`
 
 ---
@@ -576,7 +642,7 @@ ISO 27001:2022, Page 2
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.8286`
+- Answer Relevancy: `0.8270`
 - Context Precision: `1.0000`
 - Context Recall: `0.0000`
 
@@ -647,8 +713,8 @@ objectives.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7756`
-- Context Precision: `0.6111`
+- Answer Relevancy: `0.7753`
+- Context Precision: `0.5909`
 - Context Recall: `0.0000`
 
 ---
@@ -656,34 +722,33 @@ objectives.
 ### Question 26
 **Question:** What does SOC 2 require for availability?
 
-**AI Answer:** > Availability. Information and systems are available for operation and use to meet the entity’s objectives.
+**AI Answer:** > Information and systems are available for operation and use to meet the entity’s objectives.
 >
-> Availability refers to the accessibility of information used by the entity’s systems as well as the
-> products or services provided to its customers. The availability objective does not, in itself, set a
-> [Source: SOC 2 TSC, Page 5]
+> Availability refers to the accessibility of information used by the entity’s systems as well as the products or services provided to its customers. The availability objective does not, in itself, set a minimum acceptable performance level; it does not address system functionality (the specific functions a system performs) or usability (the ability of users to apply system functions to the performance of specific tasks or problems). However, it does address whether systems include controls to support accessibility for operation, monitoring, and maintenance.
+> (Source: SOC 2 TSC, Page 5)
 
-> A1.1 The entity maintains, monitors, and evaluates current processing capacity and use of system components (infrastructure, data, and software) to manage capacity demand and to enable the implementation of additional capacity to help meet its objectives.
->
-> The following points of focus, which apply only to an engagement using the trust services criteria for availability, highlight important characteristics relating to this criterion:
->
-> • Measures Current Usage — The use of the system components is measured to establish a baseline for capacity management and to use when evaluating the risk of impaired availability due to capacity constraints.
->
-> • Forecasts Capacity — The expected average and peak use of system components is forecasted and compared to system capacity and associated tolerances. Forecasting considers capacity in the event of the failure of system components that constrain capacity.
->
-> • Makes Changes Based on Forecasts — The system change management process is initiated when forecasted usage exceeds capacity tolerances.
-> [Source: SOC 2 TSC, Page 40]
+> The entity maintains, monitors, and evaluates current processing capacity and use of system components (infrastructure, data, and software) to manage capacity demand and to enable the implementation of additional capacity to help meet its objectives.
+> (Source: SOC 2 TSC, Page 40)
 
-> A1.2 The entity authorizes, designs, develops or acquires, implements, operates, approves, maintains, and monitors environmental protections, software, data backup processes, and recovery infrastructure to meet its objectives.
->
-> The following points of focus, which apply only to an engagement using the trust services availability criteria, highlight important characteristics relating to this criterion:
->
-> • Identifies Environmental Threats — As part of the risk assessment process, management identifies environmental threats that could impair the avai
+> Measures are implemented for migrating processing to alternate infrastructure in the event normal processing infrastructure becomes unavailable.
+> (Source: SOC 2 TSC, Page 42)
+
+> The entity tests recovery plan procedures supporting system recovery to meet its objectives.
+> (Source: SOC 2 TSC, Page 42)
+
+> Business continuity plan testing is performed on a periodic basis. The testing includes (1) development of testing scenarios based on threat likelihood and magnitude; (2) consideration of system components from across the entity that can impair the availability; (3) scenarios that consider the potential for the lack of availability of key personnel; and (4) revision of continuity plans and systems based on test results.
+> (Source: SOC 2 TSC, Page 42)
+
+> The integrity and completeness of backup information is tested on a periodic basis.
+> (Source: SOC 2 TSC, Page 42)
+
+> The use of the system components is measured to establish a baseline for capacity management and to use when evaluating the risk of impair
 
 **Ground Truth:** The Availability criteria require that systems are available for operation and use as committed, including performance monitoring, disaster recovery, and backup procedures.
 
 **Scores:**
 - Faithfulness: `N/A`
-- Answer Relevancy: `0.8262`
+- Answer Relevancy: `0.7160`
 - Context Precision: `0.0000`
 - Context Recall: `1.0000`
 
@@ -699,7 +764,7 @@ SOC 2 TSC, Page 28
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7575`
+- Answer Relevancy: `0.7676`
 - Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
@@ -710,20 +775,23 @@ SOC 2 TSC, Page 28
 
 **AI Answer:** > CC6.1 The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events to meet the entity's objectives.
 >
-> CC6.2 Prior to issuing system credentials and granting system access, the entity registers and authorizes new internal and external users whose access is administered by the entity. For those users whose access is administered by the entity, user system credentials are removed when user access is no longer authorized.
+> The following points of focus, specifically related to all engagements using the trust services criteria, highlight important characteristics relating to this criterion:
 >
-> CC6.3 The entity authorizes, modifies, or removes access to data, software, functions, and other protected information assets based on roles, responsibilities, or the system design and changes, giving consideration to the concepts of least privilege and segregation of duties, to meet the entity’s objectives.
->
-> CC6.6 The entity implements logical access security measures to protect against threats from sources outside its system boundaries.
->
-> [Source: SOC 2 TSC, Page 27, 28, 29, 30]
+> • Identifies and Manages the Inventory of Information Assets — The entity identifies, inventories, classifies, and manages information assets.
+> • Restricts Logical Access — Logical access to information assets, including hardware, data (at-rest, during processing, or in transmission), software, administrative authorities, mobile devices, output, and offline system components is restricted through the use of access control software and rule sets.
+> • Identifies and Authenticates Users — Persons, infrastructure, and software are identified and authenticated prior to accessing information assets, whether locally or remotely.
+> • Considers Network Segmentation — Network segmentation permits unrelated portions of the entity's information system to be isolated from each other.
+> • Manages Points of Access — Points of access by outside entities and the types of data that flow through the points of access are identified, inventoried, and managed.
+> • Manages Credentials for Infrastructure and Software — New internal and external infrastructure and software are registered, authorized, and documented prior to being granted access credentials and implemented on the network or access point. Credentials are removed and access is disabled when access is no longer required or the infrastructure and software are no longer in use.
+> • Uses Encryption to Protect Data — The entity uses encryption to supplement other measures used to protect data at rest, when such protections are deemed appropriate based on assessed risk.
+> • Protects Encryption Keys — Processes are in place to protect encryption keys during ge
 
 **Ground Truth:** SOC 2 requires controls to restrict logical access to systems including user registration, access provisioning, removal of access, and periodic review of access rights.
 
 **Scores:**
-- Faithfulness: `N/A`
-- Answer Relevancy: `0.7802`
-- Context Precision: `0.2897`
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.7493`
+- Context Precision: `0.2786`
 - Context Recall: `1.0000`
 
 ---
@@ -771,7 +839,7 @@ SOC 2 TSC, Page 28
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7780`
+- Answer Relevancy: `0.7259`
 - Context Precision: `0.8056`
 - Context Recall: `1.0000`
 
@@ -780,15 +848,28 @@ SOC 2 TSC, Page 28
 ### Question 30
 **Question:** How do NIST CSF 2.0 and ISO 27001 both address risk management?
 
-**AI Answer:** The provided context does not contain information about NIST CSF 2.0.
+**AI Answer:** > The CSF helps organizations to translate their terminology for cybersecurity and cybersecurity risk management into general risk management language that executives will understand.
+> NIST resources that describe the mutual relationship between cybersecurity risk management and ERM include: • NIST Cybersecurity Framework 2.0 – Enterprise Risk Management Quick-Start Guide
+[Source: NIST CSF 2.0, Page 16]
+
+> This document also includes requirements for the assessment and treatment of information security risks tailored to the needs of the organization. The requirements set out in this document are generic and are intended to be applicable to all organizations, regardless of type, size or nature.
+[Source: ISO 27001:2022, Page 6]
+
+> The information security management system preserves the confidentiality, integrity and availability of information by applying a risk management process and gives confidence to interested parties that risks are adequately managed.
+[Source: ISO 27001:2022, Page 4]
+
+> The organization shall define and apply an information security risk assessment process that: a) establishes and maintains information security risk criteria that include: 1) the risk acceptance criteria; and 2) criteria for performing information security risk assessments; b) ensures that repeated information security risk assessments produce consistent, valid and comparable results; c) identifies the information security risks: 1) apply the information security risk assessment process to identify risks associated with the loss of confidentiality, integrity and availability for information within the scope of the information security management system; and 2) identify the risk owners; d) analyses the information security risks: 1) assess the potential consequences that would result if the risks identified in 6.1.2 c) 1) were to materialize;
+[Source: ISO 27001:2022, Page 9]
+
+> e) formulate an information security risk treatment plan; and f) obtain risk owners’ approval of the i
 
 **Ground Truth:** NIST CSF 2.0 addresses risk through the Govern and Identify functions while ISO 27001 requires a formal risk assessment and treatment process under clause 6.1. Both frameworks emphasize identifying analyzing and responding to information security risks.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.0000`
+- Answer Relevancy: `0.7187`
 - Context Precision: `0.0000`
-- Context Recall: `0.0000`
+- Context Recall: `0.6667`
 
 ---
 
@@ -802,26 +883,26 @@ SOC 2 TSC, Page 28
 > Implement cryptographic mechanisms to conceal or randomize communication patterns unless otherwise protected by [Assignment: organization-defined alternative physical controls].
 > NIST SP 800-53, REV. 5, Page 306
 
-> Implement the following types of cryptography required for each specified cryptographic use: [Assignment: organization-defined types of cryptography for each specified cryptographic use].
+> b. Implement the following types of cryptography required for each specified cryptographic use: [Assignment: organization-defined types of cryptography for each specified cryptographic use].
 > NIST SP 800-53, REV. 5, Page 335
 
+> (2) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | SYMMETRIC KEYS
 > Produce, control, and distribute symmetric cryptographic keys using [Selection: NIST FIPS-validated; NSA-approved] key management technology and processes.
 > NIST SP 800-53, REV. 5, Page 334
 
+> (3) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | ASYMMETRIC KEYS
 > Produce, control, and distribute asymmetric cryptographic keys using [Selection: NSA-approved key management technology and processes; prepositioned keying material; DoD-approved or DoD-issued Medium Assurance PKI certificates; DoD-approved or DoD-
 > NIST SP 800-53, REV. 5, Page 334
 
+> (6) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | PHYSICAL CONTROL OF KEYS
 > Maintain physical control of cryptographic keys when stored information is encrypted by external service providers.
-> NIST SP 800-53, REV. 5, Page 334
-
-> Determine the [Assignment: organization-defined cryptographic uses]; and
 > NIST SP 800-53, REV. 5, Page 334
 
 **Ground Truth:** NIST SP 800-53 provides detailed cryptographic controls under the SC family including SC-13 for cryptographic protection and SC-12 for key management. SOC 2 TSC requires encryption to protect data at rest and processes to protect encryption keys throughout their lifecycle.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7184`
+- Answer Relevancy: `0.7569`
 - Context Precision: `0.0000`
 - Context Recall: `1.0000`
 
@@ -830,39 +911,39 @@ SOC 2 TSC, Page 28
 ### Question 32
 **Question:** What do NIST CSF 2.0 and SOC 2 have in common regarding incident response?
 
-**AI Answer:** > RS.MA-01: The incident response plan is executed in coordination with relevant third parties once an incident is declared
-> RS.MA-02: Incident reports are triaged and validated
-> RS.MA-03: Incidents are categorized and prioritized
-> RS.MA-04: Incidents are escalated or elevated as needed
-> RS.AN-03: Analysis is performed to establish what has taken place during an incident and the root cause of the incident
-> RS.AN-06: Actions performed during an investigation are recorded, and the records’
-[Source: NIST CSF 2.0, Page 26]
-
-> CC7.4 The entity responds to identified security incidents by executing a defined incident-response pro-
-gram to understand, contain, remediate, and communicate security incidents, as appropriate.
-> • Assigns Roles and Responsibilities — Roles and responsibilities for the design, im-
-plementation, maintenance, and execution of the incident response program are as-
-signed, including the use of external resources when necessary.
-> • Contains Security Incidents — Procedures are in place to contain security incidents
-> that actively threaten entity objectives.
-> • Mitigates Ongoing Security Incidents — Procedures are in place to mitigate the ef-
-fects of ongoing security incidents.
-> • Ends Threats Posed by Security Incidents — Procedures are in place to end the
-> threats posed by security incidents through closure of the vulnerability, removal of
-> unauthorized access, and other remediation actions.
-> • Restores Operations — Procedures are in place to restore data and business opera-
-tions to an interim state that permits the achievement of entity objectives.
-> • Develops and Implements Communication Protocols for Security Incidents — Pro-
-tocols for communicating security incidents and actions taken to affected parties
-> are developed and implemented to meet the entity's objectives.
-> • Obtains Understanding of Nature of Incident and Determines Containment Strategy — An understanding of the nature (for example, the method by which the incident
+**AI Answer:** > The NIST Cybersecurity Framework (CSF) 2.0 ... RESPOND (RS): Actions regarding a detected cybersecurity incident are taken
 >
+> CC7.4 The entity responds to identified security incidents by executing a defined incident-response program to understand, contain, remediate, and communicate security incidents, as appropriate.
+
+> • Incident Management (RS.MA): Responses to detected cybersecurity incidents are managed
+>
+> • Assigns Roles and Responsibilities — Roles and responsibilities for the design, implementation, maintenance, and execution of the incident response program are assigned, including the use of external resources when necessary.
+
+> o RS.MA-01: The incident response plan is executed in coordination with relevant third parties once an incident is declared
+>
+> • Contains Security Incidents — Procedures are in place to contain security incidents that actively threaten entity objectives.
+
+> • Inc ident Analysis (RS.AN): Investigations are conducted to ensure effective response and support forensics and recovery activities
+>
+> • Mitigates Ongoing Security Incidents — Procedures are in place to mitigate the effects of ongoing security incidents.
+
+> o RS. AN -03: Analysis is performed to establish what has taken place during an incident and the root cause of the incident
+>
+> • Determines Root Cause of the Event — The root cause of the event is determined.
+
+> • Inc ident Response Reporting and Communication (RS.CO): Response activities are coordinated with internal and external stakeholders as required by laws, regulations, or policies
+>
+> • Communicates Remediation Activities — Remediation activities are documented and communicated in accordance with the incident-response program.
+
+> o RS. CO -02: Internal and external stakeholders are notified of incidents
+>
+> • Develops and Implements Communication Protocols for Security Incidents — Protocols for communicating security incidents and actions taken to affected parties are developed and implemented to meet the ent
 
 **Ground Truth:** NIST CSF 2.0 includes the Respond function covering incident response planning and communications. SOC 2 requires incident response procedures under the Common Criteria. Both require documented incident handling and communication processes.
 
 **Scores:**
 - Faithfulness: `N/A`
-- Answer Relevancy: `0.7774`
+- Answer Relevancy: `0.7670`
 - Context Precision: `0.0000`
 - Context Recall: `1.0000`
 
@@ -871,13 +952,27 @@ tocols for communicating security incidents and actions taken to affected partie
 ### Question 33
 **Question:** How does ISO 27001 risk treatment relate to NIST SP 800-53 controls?
 
-**AI Answer:** The provided context does not contain information about how ISO 27001 risk treatment relates to NIST SP 800-53 controls.
+**AI Answer:** > b) determine all controls that are necessary to implement the information security risk treatment option(s) chosen;
+> NOTE 1 Organizations can design controls as required, or identify them from any source.
+> c) compare the controls determined in 6.1.3 b) above with those in Annex A and verify that no necessary controls have been omitted;
+> NOTE 2 Annex A contains a list of possible information security controls. Users of this document are directed to Annex A to ensure that no necessary information security controls are overlooked.
+> NOTE 3 The information security controls listed in Annex A are not exhaustive and additional information security controls can be included if needed.
+> d) produce a Statement of Applicability that contains:
+> — the necessary controls (see 6.1.3 b) and c));
+> © ISO/IEC 2022 – All rights reserved
+> 4
+> SNV / licensed to 14955111 - Schweiz. Vereinigung für Qualitäts- und Management-Systeme (SQS) / S105748 / 2022-10-31_12:56 / ISO/IEC 27001:2022
+[Source: ISO 27001:2022, Page 9]
+
+> Control: Respond to findings from security and privacy assessments, monitoring, and audits in accordance with organizational risk tolerance.
+> Discussion: Organizations have many options for responding to risk including mitigating risk by implementing new controls or strengthening existing controls, accepting risk with appropriate justification or rationale, sharing or transferring risk, or avoiding risk. The risk tolerance of the
+[Source: NIST SP 800-53, Page 272]
 
 **Ground Truth:** ISO 27001 requires selecting controls to treat identified risks referencing Annex A. NIST SP 800-53 provides a comprehensive control catalog that can serve as the implementation basis for ISO 27001 Annex A controls making the two frameworks complementary.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.0000`
+- Answer Relevancy: `0.7848`
 - Context Precision: `0.0000`
 - Context Recall: `0.5000`
 

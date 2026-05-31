@@ -156,7 +156,8 @@ _FRAMEWORK_KEYWORDS = {
         "csf", "cybersecurity framework", "nist csf", "nist framework",
         "govern function", "identify function", "protect function", "detect function",
         "respond function", "recover function", "framework profile", "framework tier",
-        "organizational profile", "community profile",
+        "organizational profile", "community profile", "csf 2.0", "csf2",
+        "risk management strategy", "cybersecurity risk management",
     ],
     "NIST.SP.800-53r5.pdf": [
         "800-53", "sp 800", "nist sp", "ac-", "au-", "ca-", "cm-", "cp-",
@@ -171,9 +172,10 @@ _FRAMEWORK_KEYWORDS = {
         "iso 27001", "iso/iec 27001", "27001", "isms", "information security management system",
         "annex a", "clause 4", "clause 5", "clause 6", "clause 7", "clause 8",
         "clause 9", "clause 10", "risk treatment", "statement of applicability",
-        "certification", "audit programme", "management review", "nonconformity",
+        "certification", "certification maintenance", "audit programme", "management review", "nonconformity",
         "continual improvement", "internal audit", "information security policy",
-        "leadership", "top management",
+        "leadership", "top management", "information security risk",
+        "risk assessment process", "risk treatment process",
     ],
     "trust-services-criteria.pdf": [
         "soc 2", "trust services", "tsc", "common criteria", "cc1", "cc2", "cc3",
@@ -238,6 +240,7 @@ async def grade_documents(state: GraphState):
         "Here is the retrieved document: \n\n {context} \n\n"
         "Here is the user question: {question} \n"
         "If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant. \n"
+        "Be generous — if the document is even partially relevant or from the same framework domain as the question, grade it yes. \n"
         "Return ONLY the word 'yes' or 'no'."
     )
 
@@ -248,10 +251,21 @@ async def grade_documents(state: GraphState):
     )
 
     relevant_docs = [doc for doc, g in zip(documents, grades) if "yes" in g.lower()]
-    score = "yes" if relevant_docs else "no"
-    print(f"---RESULT: {len(relevant_docs)}/{len(documents)} chunks relevant---")
 
-    # Only update documents if we found relevant ones — keep originals for transform_query retry
+    # For cross-framework queries, the grader can eliminate an entire framework's chunks.
+    # Guarantee at least one chunk per framework survives by keeping the first chunk
+    # from each framework that was retrieved but fully graded out.
+    if relevant_docs:
+        present_frameworks = {os.path.basename(d.metadata.get("source", "")) for d in relevant_docs}
+        for doc in documents:
+            fname = os.path.basename(doc.metadata.get("source", ""))
+            if fname and fname not in present_frameworks:
+                relevant_docs.append(doc)
+                present_frameworks.add(fname)
+
+    score = "yes" if relevant_docs else "no"
+    print(f"---RESULT: {len(relevant_docs)}/{len(documents)} chunks kept---")
+
     update = {"grade": score}
     if relevant_docs:
         update["documents"] = relevant_docs
@@ -408,10 +422,27 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
 
     A keyword pre-filter runs first to skip the LLM call entirely for obvious greetings.
     """
-    # Fast path: obvious greetings/identity — no LLM call needed
     query_lower = user_query.lower().strip()
-    if len(user_query) < 60 and any(kw in query_lower for kw in _CHAT_KEYWORDS):
+
+    # Fast path: obvious greetings/identity — whole-word match only to avoid
+    # false positives like "hi" matching inside "leadership" or "this"
+    import re
+    if len(user_query) < 60 and any(
+        re.search(r'\b' + re.escape(kw) + r'\b', query_lower) for kw in _CHAT_KEYWORDS
+    ):
         return "chat"
+
+    # Fast path: explicit compliance terms — skip LLM router, go straight to search
+    _SEARCH_KEYWORDS = {
+        "nist", "iso 27001", "soc 2", "800-53", "csf", "isms", "tsc", "aicpa",
+        "function", "control", "framework", "compliance", "audit", "policy",
+        "govern", "identify", "protect", "detect", "respond", "recover",
+        "encrypt", "cryptograph", "access control", "incident", "risk",
+        "annex", "clause", "criteria", "certification", "safeguard",
+        "leadership", "requirement", "management system",
+    }
+    if any(kw in query_lower for kw in _SEARCH_KEYWORDS):
+        return "search"
 
     history = history or []
     history_context = ""
@@ -424,7 +455,7 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     prompt = ChatPromptTemplate.from_template(
         "You are a router. Classify user input into one of two categories: \n"
         "1. 'chat': Greetings, identity checks, unrelated/nonsense questions (dogs, painting, sports), or general help. \n"
-        "2. 'search': Specific, serious questions about cybersecurity compliance frameworks including NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2, organizational policies, security controls, or audit requirements. \n\n"
+        "2. 'search': Any question about cybersecurity compliance frameworks (NIST CSF 2.0, NIST SP 800-53, ISO 27001, SOC 2), including their requirements, controls, functions, clauses, criteria, policies, leadership obligations, risk management, audit processes, or certification. \n\n"
         "{history_context}"
         "Input: {query} \n"
         "If the question asks about requirements, controls, functions, criteria, clauses, or policies of any framework — return 'search'. \n"
