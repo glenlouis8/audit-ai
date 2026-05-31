@@ -65,10 +65,10 @@ Evaluated across 33 questions spanning all 4 frameworks + cross-framework compar
 
 | Metric | Score |
 | :--- | :--- |
-| **Faithfulness** | `0.8761` ✅ |
-| **Answer Relevancy** | `0.7088` ✅ |
-| **Context Precision** | `0.4734` ⚠️ |
-| **Context Recall** | `0.8636` ✅ |
+| **Faithfulness** | `0.9152` ✅ |
+| **Answer Relevancy** | `0.7400` ✅ |
+| **Context Precision** | `0.5250` ⚠️ |
+| **Context Recall** | `0.8535` ✅ |
 
 > See [evals/ragas_report.md](evals/ragas_report.md) for full per-question breakdown.
 
