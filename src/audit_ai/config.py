@@ -23,6 +23,18 @@ CACHE_EMBEDDING_DIM = 3072  # gemini-embedding-001 default output dimension
 # grading cost (one LLM call per document).
 RETRIEVAL_K = 4
 
+# Reranker keeps the top-N chunks after cross-encoder reranking. Set lower to increase
+# precision at the cost of recall; raise it if answers feel incomplete.
+RERANKER_TOP_N = 6
+
+# 800-53 uses denser, more structured text (control tables + prose mixed together).
+# Smaller chunks prevent table rows from dominating a chunk and polluting retrieval.
+CHUNK_SIZE_800_53 = 700
+CHUNK_OVERLAP_800_53 = 100
+
+# Chunks shorter than this are almost certainly table rows or page headers — discard them.
+MIN_CHUNK_LENGTH = 120
+
 # Maximum number of query-rewrite retries before falling back to partial-context generation.
 MAX_RETRIES = 3
 

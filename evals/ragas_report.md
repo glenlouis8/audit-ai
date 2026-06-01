@@ -1,16 +1,16 @@
 # 📊 AuditAI: RAG Evaluation Report
 
-Generated on: 2026-05-30 20:26:19
+Generated on: 2026-05-30 23:26:53
 
 ## 🏛️ Executive Summary
 Below are the average scores across all evaluated metrics.
 
 | Metric | Score | Status |
 | :--- | :--- | :--- |
-| **Faithfulness** | `0.9152` | ✅ Passing |
-| **Answer Relevancy** | `0.7400` | ✅ Passing |
-| **Context Precision** | `0.5250` | ⚠️ Needs Review |
-| **Context Recall** | `0.8535` | ✅ Passing |
+| **Faithfulness** | `0.9673` | ✅ Passing |
+| **Answer Relevancy** | `0.7758` | ✅ Passing |
+| **Context Precision** | `0.7936` | ✅ Passing |
+| **Context Recall** | `1.0000` | ✅ Passing |
 
 ---
 
@@ -29,7 +29,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7636`
+- Answer Relevancy: `0.8138`
 - Context Precision: `0.5179`
 - Context Recall: `1.0000`
 
@@ -76,7 +76,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `0.8889`
-- Answer Relevancy: `0.7673`
+- Answer Relevancy: `0.7696`
 - Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
@@ -95,7 +95,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7921`
+- Answer Relevancy: `0.7917`
 - Context Precision: `0.8667`
 - Context Recall: `1.0000`
 
@@ -123,7 +123,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7332`
+- Answer Relevancy: `0.7396`
 - Context Precision: `0.8875`
 - Context Recall: `1.0000`
 
@@ -139,7 +139,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7094`
+- Answer Relevancy: `0.7127`
 - Context Precision: `0.6847`
 - Context Recall: `1.0000`
 
@@ -161,7 +161,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `N/A`
-- Answer Relevancy: `0.7472`
+- Answer Relevancy: `0.7446`
 - Context Precision: `0.5556`
 - Context Recall: `1.0000`
 
@@ -177,7 +177,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `0.8889`
-- Answer Relevancy: `0.7567`
+- Answer Relevancy: `0.7554`
 - Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
@@ -195,13 +195,13 @@ Below are the average scores across all evaluated metrics.
 > PROTECT (PR): Safeguards to manage the organization’s cybersecurity risks are used
 [Source: NIST CSF 2.0, Page 23]
 
-**Ground Truth:** The Protect function focuses on implementing appropriate safeguards to ensure the delivery of critical infrastructure services and to limit or contain the impact of a potential cybersecurity event.
+**Ground Truth:** The Protect function uses safeguards to manage the organization's cybersecurity risks, securing assets to prevent or lower the likelihood and impact of adverse cybersecurity events, covering identity management, authentication, access control, data security, and platform security.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7448`
-- Context Precision: `0.9167`
-- Context Recall: `0.0000`
+- Answer Relevancy: `0.7473`
+- Context Precision: `1.0000`
+- Context Recall: `1.0000`
 
 ---
 
@@ -230,7 +230,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `N/A`
-- Answer Relevancy: `0.7486`
+- Answer Relevancy: `0.7694`
 - Context Precision: `0.7806`
 - Context Recall: `1.0000`
 
@@ -239,21 +239,21 @@ Below are the average scores across all evaluated metrics.
 ### Question 11
 **Question:** What is the purpose of NIST SP 800-53?
 
-**AI Answer:** > NIST Special Publication 800-53, Revision 5, responds to this need by embarking on a proactive and systemic approach to develop and make available to a broad base of public and private sector organizations a comprehensive set of security and privacy safeguarding measures for all types of computing platforms, including general purpose computing systems, cyber-physical systems, cloud systems, mobile systems, industrial control systems, and Internet of Things (IoT) devices. Safeguarding measures include both security and privacy controls to protect the critical and essential operations and assets of organizations and the privacy of individuals. The objective is to make the systems we depend on
-> NIST Special Publication 800-53, Revision 5, responds to the call by the DSB by embarking on a proactive and systemic approach to develop and make available to a broad base of public and private sector organizations a comprehensive set of safeguarding measures for all types of computing platforms, including general purpose computing systems, cyber-physical systems, cloud-based systems, mobile devices, Internet of Things (IoT) devices, weapons systems, space systems, communications systems, environmental control systems, super computers, and industrial control systems. Those safeguarding measures include implementing security and privacy controls to protect the critical and essential operations and assets of
-> This catalog of security and privacy controls provides protective measures for systems, organizations, and individuals.32 The controls are designed to facilitate risk management and compliance with applicable federal laws, executive orders, directives, regulations, policies, and standards.
-> The security and privacy controls in this publication are recommended for use by organizations to satisfy their information security and privacy requirements.
-[Source: NIST SP 800-53, Page 10]
-[Source: NIST SP 800-53, Page 15]
-[Source: NIST SP 800-53, Page 42]
-[Source: NIST SP 800-53
+**AI Answer:** > SP 800-53B contains security and privacy control baselines for federal information systems and organizations. It provides guidance for tailoring control baselines and for developing o verlays to support the security and privacy requirements of stakeholder s and their organizations.
+> [Source: NIST SP 800-53, Page 11]
+
+> NIST Special Publication 800-53, Revision 5, responds to this need by embarking on a proactive and systemic approach to develop and make available to a broad base of public and private sector organizations a comprehensive set of safeguarding measures for all types of computing platforms, including general purpose computing systems, cyber-physical systems, cloud-based systems, mobile devices, Internet of Things (IoT) devices, weapons systems, space systems, communications systems, environmental control systems, super computers, and industrial control systems.
+> [Source: NIST SP 800-53, Page 15]
+
+> NIST Special Publication 800-53, Revision 5, responds to this need by embarking on a proactive and systemic approach to develop and make available to a broad base of public and private sector organizations a comprehensive
+> [Source: NIST SP 800-53, Page 10]
 
 **Ground Truth:** NIST SP 800-53 provides a catalog of security and privacy controls for federal information systems and organizations to protect against threats and risks.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.8126`
-- Context Precision: `0.7651`
+- Answer Relevancy: `0.7961`
+- Context Precision: `0.6867`
 - Context Recall: `1.0000`
 
 ---
@@ -261,232 +261,229 @@ Below are the average scores across all evaluated metrics.
 ### Question 12
 **Question:** What is control SC-13 in NIST SP 800-53?
 
-**AI Answer:** > SC-13 Cryptographic Protection S
-> SC-13(1) FIPS-VALIDATED CRYPTOGRAPHY W: Incorporated into SC-13.
-> SC-13(2) NSA-APPROVED CRYPTOGRAPHY W: Incorporated into SC-13.
-> SC-13(3) INDIVIDUALS WITHOUT FORMAL ACCESS APPROVALS W: Incorporated into SC-13.
-> SC-13(4) DIGITAL SIGNATURES W: Incorporated into SC-13.
-[Source: NIST SP 800-53, Page 485]
-
-> SC-13 CRYPTOGRAPHIC PROTECTION
+**AI Answer:** > SC-13 CRYPTOGRAPHIC PROTECTION
 > Control:
 > a. Determine the [Assignment: organization-defined cryptographic uses]; and
-[Source: NIST SP 800-53, Page 334]
+[NIST SP 800-53, Page 334]
 
 **Ground Truth:** SC-13 is the Cryptographic Protection control, which requires organizations to determine cryptographic uses and implement required types of cryptography for each use.
 
 **Scores:**
-- Faithfulness: `0.7500`
-- Answer Relevancy: `0.8256`
-- Context Precision: `0.5000`
+- Faithfulness: `0.6667`
+- Answer Relevancy: `0.7997`
+- Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 13
-**Question:** What does the AC family of controls cover in NIST SP 800-53?
+**Question:** What does NIST SP 800-53 AC-2 require for account management?
 
-**AI Answer:** > AC Access Control
-[Source: NIST SP 800-53, Page 34]
+**AI Answer:** > AC-2 ACCOUNT MANAGEMENT
+> Control:
+> a. Define and document the types of accounts allowed and specifically prohibited for use
+> within the system;
+> b. Assign account managers;
+> c. Require [Assignment: organization-defined prerequisites and criteria] for group and role
+> membership;
+> d. Specify:
+> 1. Authorized users of the system;
+> 2. Group and role membership; and
+> 3. Access authorizations (i.e., privileges) and [Assignment: organization-defined attributes
+> (as required)] for each account;
+> e. Require approvals by [Assignment: organization-defined personnel or roles] for requests to
+> create accounts;
+> f. Create, enable, modify, disable, and remove accounts in accordance with [Assignment:
+> organization-defined policy, procedures, prerequisites, and criteria];
+> g. Monitor the use of accounts;
+> h. Notify account managers and [Assignment: organization-defined personnel or roles] within:
+> 1. [Assignment: organization-defined time period] when accounts are no longer required;
+> 2. [Assignment: organization-defined time period] when users are terminated or
+> transferred; and
+> 3. [Assignment: organization-defined time period] when system usage or need-to-know
+> changes for an individual;
+> i. Authorize access to the system based on:
+> 1. A valid access authorization;
+> 2. Intended system usage; and
+> 3. [Assignment: organization-defined attributes (as required)];
+> j. Review accounts for compliance with account management requirements [Assignment:
+> organization-defined frequency];
+> k. Establish and implement a process for changing shared or group account authenticators (if
+> deployed) when individuals are removed from the group; and
+> l. Align account management processes with personnel termination and transfer processes.
+> [Source: NIST SP 800-53, Page 45]
 
-**Ground Truth:** The AC (Access Control) family covers policies and procedures for account management, access enforcement, least privilege, session controls, and remote access.
+**Ground Truth:** AC-2 requires organizations to define account types, establish conditions for group and role membership, identify authorized users, and manage the lifecycle of accounts including creation, enabling, modification, disabling, and removal.
 
 **Scores:**
-- Faithfulness: `0.5000`
-- Answer Relevancy: `0.8370`
-- Context Precision: `0.0000`
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.8193`
+- Context Precision: `0.1429`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 14
-**Question:** What is the purpose of the RA control family in NIST SP 800-53?
+**Question:** What does NIST SP 800-53 RA-3 require for risk assessment?
 
-**AI Answer:** > RA Risk Assessment
->
-> Families of controls contain base controls and control enhancements, which are directly related to their base controls. Control enhancements either add functionality or specificity to a base control or increase the strength of a base control. Control enhancements are used in systems and environments of operation that require greater protection than the protection provided by the base control. The need for organizations to select and implement control enhancements is due to the potential adverse organizational or individual impacts or when organizations require
-[Source: NIST SP 800-53, Page 34]
+**AI Answer:** > RA-3 RISK ASSESSMENT
+> Control:
+> a. Conduct a risk assessment, including:
+> 1. Identifying threats to and vulnerabilities in the system;
+> 2. Determining the likelihood and magnitude of harm from unauthorized access, use,
+> disclosure, disruption, modification, or destruction of the system, the information it
+> processes, stores, or transmits, and any related information; and
+> 3. Determining the likelihood and impact of adverse effects on individuals arising from the
+> processing of personally identifiable information;
+> b. Integrate risk assessment results and risk management decisions from the organization and
+> mission or business process perspectives with system-level risk assessments;
+> c. Document risk assessment results in [Selection: security and privacy plans; risk assessment
+> report; [Assignment: organization-defined document]];
+> d. Review risk assessment results [Assignment: organization-defined frequency];
+> e. Disseminate risk assessment results to [Assignment: organization-defined personnel or
+> roles]; and
+> f. Update the risk assessment [Assignment: organization-defined frequency] or when there are
+> significant changes to the system, its environment of operation, or other conditions that may
+> impact the security or privacy state of the system.
+> Discussion: Risk assessments consider threats, vulnerabilities, likelihood, and impact to
+> organizational operations and assets, individuals, other organizations, and the Nation. Risk
+> assessments also consider risk from external parties, including contractors who operate systems
+> on behalf of the organization, individuals who access organizational systems, service providers,
+> and outsourcing entities.
+[Source: NIST SP 800-53, Page 266]
 
-> TABLE 1: SECURITY AND PRIVACY CONTROL FAMILIES
-> ID FAMILY ID FAMILY
-> ...
-> CP Contingency Planning RA Risk Assessment
-> ...
-[Source: NIST SP 800-53, Page 34]
-
-**Ground Truth:** The RA (Risk Assessment) family requires organizations to conduct risk assessments, identify vulnerabilities, and maintain a risk register.
+**Ground Truth:** RA-3 requires organizations to conduct a risk assessment that identifies threats and vulnerabilities to systems, determines the likelihood and impact of exploitation, and produces a risk assessment report.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.8016`
-- Context Precision: `0.1000`
-- Context Recall: `0.0000`
+- Answer Relevancy: `0.8135`
+- Context Precision: `1.0000`
+- Context Recall: `1.0000`
 
 ---
 
 ### Question 15
-**Question:** What does NIST SP 800-53 say about incident response?
+**Question:** What does NIST SP 800-53 IR-2 require for incident response training?
 
-**AI Answer:** > IR-1 POLICY AND PROCEDURES
-> Control:
-> a. Develop, document, and disseminate to [Assignment: organization-defined personnel or
-> roles]:
-> 1. [Selection (one or more): Organization-level; Mission/business process-level; System-
-> level] incident response policy that:
-> (a) Addresses purpose, scope, roles, responsibilities, management commitment,
-> coordination among organizational entities, and compliance; and
-> (b) Is consistent with applicable laws, executive orders, directives, regulations, policies,
-> standards, and guidelines; and
-> 2. Procedures to facilitate the implementation of the incident response policy and the
-> associated incident response controls;
-> b. Designate an [Assignment: organization-defined official] to manage the development,
-> documentation, and dissemination of the incident response policy and procedures; and
-> c. Review and update the current incident response:
-> 1. Policy [Assignment: organization-defined frequency] and following [Assignment:
-> organization-defined events]; and
-> 2. Procedures [Assignment: organization-defined frequency] and following [Assignment:
-> organization-defined events].
-> Discussion: Incident response policy and procedures address the controls in the IR family that
-> [Source: NIST SP 800-53, Page 175]
-
-> IR-2 INCIDENT RESPONSE TRAINING
-> Control:
-> a. Provide incident response training to system users consistent with assigned roles and
-> responsibilities:
-> 1. Within [Assignment: organization-defined time period] of assuming an incident response
-> role or responsibility or acquiring system access;
+**AI Answer:** > a. Provide incident response training to system users consistent with assigned roles and responsibilities:
+> 1. Within [Assignment: organization-defined time period] of assuming an incident response role or responsibility or acquiring system access;
 > 2. When required by system changes; and
 > 3. [Assignment: organization-defined frequency] thereafter; and
-> b. Review and update incident response training content [Assignment: organization-defined
+> b. Review and update incident response training content [Assignment: organization-defined frequency] and following [Assignment: organization-defined events].
+>
 > [Source: NIST SP 800-53, Page 176]
 
-> IR-4 INCIDENT HANDLING
-> Control:
-> a. Implement an incident handling capability for incidents that is consistent with the incident
-> response plan and includes preparation, detec
+> Incident response training is associated with the assigned roles and responsibilities of organizational personnel to ensure that the appropriate content and level of detail are included in such training. For example, users may only need to know who to call or how to recognize an incident; system administrators may require additional training on how to handle incidents; and incident responders may receive more specific training on forensics, data collection techniques, reporting, system recovery, and system restoration. Incident response training includes user training in identifying and reporting suspicious activities from external and internal sources. Incident response training for users may be provided as part of AT-2 or AT-3.
+>
+> [Source: NIST SP 800-53, Page 176]
 
-**Ground Truth:** NIST SP 800-53 IR controls require organizations to establish an incident response capability including training, testing, handling, monitoring, and reporting of incidents.
+> Events that may precipitate an update to incident response training content include, but are not limited to, incident response plan testing or response to an actual incident (lessons learned), assessment or audit findings, or changes in applicable laws, executive orders, directives, regulations, policies, standards, and guidelines.
+>
+> [Source: NIST SP 800-53, Page 176]
+
+> (1) INCIDENT RESPONSE TRAINING | SIMULATED EVENTS
+> Incorporate simulated events into incident response training to facilitate the required response by personnel in crisis situations.
+>
+> [Source: NIST SP 800-53, Page 176]
+
+> (3) INCIDENT RESPONSE TRAINING | BREACH
+> Provide inci
+
+**Ground Truth:** IR-2 requires organizations to provide incident response training to system users consistent with their assigned roles and responsibilities, within a defined period of assuming an incident response role and at a defined frequency thereafter.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7950`
-- Context Precision: `0.1964`
+- Answer Relevancy: `0.8253`
+- Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 16
-**Question:** What are the physical and environmental protection controls in NIST SP 800-53?
+**Question:** What does NIST SP 800-53 PE-2 require for physical access authorizations?
 
-**AI Answer:** > PE-1 POLICY AND PROCEDURES
-> PE-2 Physical Access Authorizations
-> PE-2(1) ACCESS BY POSITION AND ROLE
-> PE-2(2) TWO FORMS OF IDENTIFICATION
-> PE-2(3) RESTRICT UNESCORTED ACCESS
-> PE-3 Physical Access Control
-> PE-3(1) SYSTEM ACCESS
-> PE-3(2) FACILITY AND SYSTEMS
-> PE-3(3) CONTINUOUS GUARDS
-> PE-3(4) LOCKABLE CASINGS
-> PE-3(5) TAMPER PROTECTION
-> PE-3(6) FACILITY PENETRATION TESTING W: Incorporated into CA-8.
-> PE-3(7) PHYSICAL BARRIERS
-> PE-3(8) ACCESS CONTROL VESTIBULES
-> PE-4 Access Control for Transmission
-> PE-5 Access Control for Output Devices
-> PE-5(1) ACCESS TO OUTPUT BY AUTHORIZED INDIVIDUALS W: Incorporated into PE-5.
-> PE-5(2) LINK TO INDIVIDUAL IDENTITY
-> PE-5(3) MARKING OUTPUT DEVICES W: Incorporated into PE-22.
-> PE-6 Monitoring Physical Access
-> PE-6(1) INTRUSION ALARMS AND SURVEILLANCE EQUIPMENT
-> PE-6(2) AUTOMATED INTRUSION RECOGNITION AND RESPONSES
-> PE-6(3) VIDEO SURVEILLANCE
-> PE-6(4) MONITORING PHYSICAL ACCESS TO SYSTEMS
-> PE-7 Visitor Control W: Incorporated into PE-2 and PE-3.
-> PE-8 Visitor Access Records
-> PE-8(1) AUTOMATED RECORDS MAINTENANCE AND REVIEW
-> PE-8(2) PHYSICAL ACCESS RECORDS W: Incorporated into PE-2.
-> PE-8(3) LIMIT PERSONALLY IDENTIFIABLE INFORMATION ELEMENTS
-> PE-9 Power Equipment and Cabling
-> PE-9(1) REDUNDANT CABLING
-> PE-9(2) AUTOMATIC VOLTAGE CONTROLS
-> PE-10 Emergency Shutoff
-> PE-10(1) ACCIDENTAL AND UNAUTHORIZED ACTIVATION W: Incorporated into PE-10.
-> PE-11 Emergency Power
-> PE-11(1) ALTERNATE POWER SUPPLY — MINIMAL OPERATIONAL CAPABILITY
-> PE-11(2) ALTERNATE POWER SUPPLY — SELF-CONTAINED
-> PE-12 Emergency Lighting
-> PE-12(1) ESSENTIAL MISSION AND BUSINESS FUNCTIONS
-> PE-13 Fire Protection
-> PE-13(1) DETECTION SYSTEMS — AUTOMATIC ACTIVATION AND NOTIFICATION
-> PE-13(2) SUPPRESSION SYSTEMS — AUTOMATIC ACTIVATION AND NOTIFICATION
-> PE-13(3) AUTOMATIC FIRE SUPPRESSION W: Incorporated into PE-13(2).
-> PE-13(4) INSPECTIONS
-> PE-14 Environmental Controls
-> PE-14(1) AUTOMATIC CONTROLS
-> PE-14(2) MONITORING WITH ALARMS AND
+**AI Answer:** > PE-2 PHYSICAL ACCESS AUTHORIZATIONS
+> Control:
+> a. Develop, approve, and maintain a list of individuals with authorized access to the facility
+> where the system resides;
+> b. Issue authorization credentials for facility access;
+> c. Review the access list detailing authorized facility access by individuals [Assignment:
+> organization-defined frequency]; and
+> d. Remove individuals from the facility access list when access is no longer required.
+> [Source: NIST SP 800-53, Page 206]
 
-**Ground Truth:** The PE family covers physical access authorizations, monitoring, visitor control, emergency shutoff, power equipment protection, and delivery and removal controls.
+> Physical access authorizations apply to employees and visitors. Individuals with
+> permanent physical access authorization credentials are not considered visitors. Authorization
+> credentials include ID badges, identification cards, and smart cards. Organizations determine the
+> strength of authorization credentials needed consistent with applicable laws, executive orders,
+> directives, regulations, policies, standards, and guidelines. Physical access authorizations may not
+> be necessary to access certain areas within facilities that are designated as publicly accessible.
+> [Source: NIST SP 800-53, Page 206]
+
+> (1) PHYSICAL ACCESS AUTHORIZATIONS | ACCESS BY POSITION OR ROLE
+> Authorize physical access to the facility where the system resides based on position or
+> role.
+> [Source: NIST SP 800-53, Page 206]
+
+> (3) PHYSICAL ACCESS AUTHORIZATIONS | RESTRICT UNESCORTED ACCESS
+> Restrict unescorted access to the facility where the system resides to personnel with
+> [Selection (one or more): security clearances for all information contained within the
+> system; formal access authorizations for all information contained within the system; need
+> for access to all information contained within the system; [Assignment: organization-
+> defined physical access authorizations]].
+> [Source: NIST SP 800-53, Page 206]
+
+> points to the facility where the system resides] by:
+> 1. Verifying individual access authorizations before granting access to the facility; and
+> 2. Controlling ingress and egres
+
+**Ground Truth:** PE-2 requires organizations to develop, approve, and maintain a list of individuals with authorized access to facilities where systems reside, issue authorization credentials, and review and remove individuals who no longer require access.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.6637`
-- Context Precision: `0.0909`
+- Answer Relevancy: `0.8314`
+- Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 17
-**Question:** What does NIST SP 800-53 require for audit and accountability?
+**Question:** What does NIST SP 800-53 AU-2 require for event logging?
 
-**AI Answer:** > Develop, document, and disseminate to [Assignment: organization-defined personnel or roles]:
-> 1. [Selection (one or more): Organization-level; Mission/business process-level; System-
-> level] audit and accountability policy that:
-> (a) Addresses purpose, scope, roles, responsibilities, management commitment,
-> coordination among organizational entities, and compliance; and
-> (b) Is consistent with applicable laws, executive orders, directives, regulations, policies,
-> standards, and guidelines; and
-> 2. Procedures to facilitate the implementation of the audit and accountability policy and
-> the associated audit and accountability controls;
-> b. Designate an [Assignment: organization-defined official] to manage the development,
-> documentation, and dissemination of the audit and accountability policy and procedures;
-> and
-> c. Review and update the current audit and accountability:
-> 1. Policy [Assignment: organization-defined frequency] and following [Assignment:
-> organization-defined events]; and
-> 2. Procedures [Assignment: organization-defined frequency] and following [Assignment:
-> organization-defined events].
-> (NIST SP 800-53, Page 91)
+**AI Answer:** > AU-2 EVENT LOGGING
+> Control:
+> a. Identify the types of events that the system is capable of logging in support of the audit
+> function: [Assignment: organization-defined event types that the system is capable of
+> logging];
+> b. Coordinate the event logging function with other organizational entities requiring audit-
+> related information to guide and inform the selection criteria for events to be logged;
+> c. Specify the following event types for logging within the system: [Assignment: organization-
+> defined event types (subset of the event types defined in AU-2a.) along with the frequency of
+> (or situation requiring) logging for each identified event type];
+> d. Provide a rationale for why the event types selected for logging are deemed to be adequate
+> to support after-the-fact investigations of incidents; and
+> e. Review and update the event types selected for logging [Assignment: organization-defined
+> frequency].
+>
+> Discussion: An event is an observable occurrence in a system. The types of events that require
+> logging are those events that are significant and relevant to the security of systems and the
+> privacy of individuals. Event logging also supports specific monitoring and auditing needs. Event
+> types include password changes, failed logons or failed accesses related to systems, security or
+> privacy attribute changes, administrative privilege usage, PIV credential usage, data action
+> changes, query parameters, or external credential usage. In determining the set of event types
+> that require logging, organizations consider the monitoring and auditing appropriate for each of
+> the controls to be implemented. For completeness, event logging includes all protocols that are
+> operational and supported by the system.
+> To balance monitoring and auditing requirements with other system needs, event logging
+> requires identifying the subset of event types that are logged at a given point in time. For
+> organizations consider the logging necessary to c
 
-> Implement the security design principle of accountability and traceability in [Assignment:
-> organization-defined systems or system components].
-> Discussion: The principle of accountability and traceability states that it is possible to trace
-> security-relevant actions (i.e., subject-object interactions) to the entity on whose behalf the
-> action is being taken. The principle of accountability and traceability requires a trustworthy
-> infrastructure that can record details about actions that affect system security (e.g., an audit
-> (NIST SP 800-53, Page 292)
-
-> TABLE C-3: AUDIT AND ACCOUNTABILITY FAMILY
-> CONTROL
-> NUMBER
-> CONTROL NAME
-> CONTROL ENHANCEMENT NAME
-> IMPLEMENTED
-> BY
-> ASSURANCE
-> AU-1 Policy and Procedures O √
-> AU-2 Event Logging O
-> AU-3 Content of Audit Records S
-> (NIST SP 800-53, Page 460)
-
-> a. Id
-
-**Ground Truth:** The AU family requires organizations to create and retain system audit logs, protect audit information, review logs, and generate reports to enable monitoring of system activity.
+**Ground Truth:** AU-2 requires organizations to identify the types of events that the system is capable of logging in support of the audit function and coordinate the event logging function with other organizations.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7695`
-- Context Precision: `0.0000`
+- Answer Relevancy: `0.7530`
+- Context Precision: `0.5317`
 - Context Recall: `1.0000`
 
 ---
@@ -504,7 +501,7 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `0.9286`
-- Answer Relevancy: `0.7581`
+- Answer Relevancy: `0.7277`
 - Context Precision: `0.8056`
 - Context Recall: `1.0000`
 
@@ -610,45 +607,30 @@ Below are the average scores across all evaluated metrics.
 
 **Scores:**
 - Faithfulness: `0.8000`
-- Answer Relevancy: `0.6864`
+- Answer Relevancy: `0.7184`
 - Context Precision: `0.6389`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 22
-**Question:** What is required for ISO 27001 certification maintenance?
-
-**AI Answer:** The provided context does not contain information about ISO 27001 certification maintenance.
-
-**Ground Truth:** Organizations must conduct internal audits, management reviews, monitor ISMS performance, address nonconformities, and continually improve the ISMS.
-
-**Scores:**
-- Faithfulness: `0.0000`
-- Answer Relevancy: `0.0000`
-- Context Precision: `0.3500`
-- Context Recall: `1.0000`
-
----
-
-### Question 23
 **Question:** What does ISO 27001 Annex A address?
 
 **AI Answer:** > Annex A contains a list of possible information security controls. Users of this document are directed to Annex A to ensure that no necessary information security controls are overlooked.
 > NOTE 3 The information security controls listed in Annex A are not exhaustive and additional information security controls can be included if needed.
 [Source: ISO 27001:2022, Page 9]
 
-**Ground Truth:** Annex A provides a reference set of information security controls organized into organizational, people, physical, and technological control categories.
+**Ground Truth:** Annex A provides a reference list of information security controls derived from ISO/IEC 27002:2022 that organizations use to address risks identified during the risk assessment and treatment process.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.8270`
-- Context Precision: `1.0000`
-- Context Recall: `0.0000`
+- Answer Relevancy: `0.8286`
+- Context Precision: `0.6667`
+- Context Recall: `1.0000`
 
 ---
 
-### Question 24
+### Question 23
 **Question:** What are the Trust Services Criteria in SOC 2?
 
 **AI Answer:** > The trust services criteria were designed to provide flexibility in application and use for a variety of differ-
@@ -690,7 +672,7 @@ cy), either individually or in combination with controls in other categories.
 
 ---
 
-### Question 25
+### Question 24
 **Question:** What is the Security category in SOC 2?
 
 **AI Answer:** > Security. Information and systems are protected against unauthorized access, unauthorized dis-
@@ -709,52 +691,33 @@ objectives.
 > formation.
 [Source: SOC 2 TSC, Page 5]
 
-**Ground Truth:** The Security category requires controls over logical and physical access, system operations, change management, and risk mitigation to protect information and systems.
+**Ground Truth:** The Security category protects information and systems against unauthorized access, unauthorized disclosure, and damage to systems that could compromise the availability, integrity, confidentiality, and privacy of information or systems.
 
 **Scores:**
 - Faithfulness: `1.0000`
 - Answer Relevancy: `0.7753`
-- Context Precision: `0.5909`
-- Context Recall: `0.0000`
-
----
-
-### Question 26
-**Question:** What does SOC 2 require for availability?
-
-**AI Answer:** > Information and systems are available for operation and use to meet the entity’s objectives.
->
-> Availability refers to the accessibility of information used by the entity’s systems as well as the products or services provided to its customers. The availability objective does not, in itself, set a minimum acceptable performance level; it does not address system functionality (the specific functions a system performs) or usability (the ability of users to apply system functions to the performance of specific tasks or problems). However, it does address whether systems include controls to support accessibility for operation, monitoring, and maintenance.
-> (Source: SOC 2 TSC, Page 5)
-
-> The entity maintains, monitors, and evaluates current processing capacity and use of system components (infrastructure, data, and software) to manage capacity demand and to enable the implementation of additional capacity to help meet its objectives.
-> (Source: SOC 2 TSC, Page 40)
-
-> Measures are implemented for migrating processing to alternate infrastructure in the event normal processing infrastructure becomes unavailable.
-> (Source: SOC 2 TSC, Page 42)
-
-> The entity tests recovery plan procedures supporting system recovery to meet its objectives.
-> (Source: SOC 2 TSC, Page 42)
-
-> Business continuity plan testing is performed on a periodic basis. The testing includes (1) development of testing scenarios based on threat likelihood and magnitude; (2) consideration of system components from across the entity that can impair the availability; (3) scenarios that consider the potential for the lack of availability of key personnel; and (4) revision of continuity plans and systems based on test results.
-> (Source: SOC 2 TSC, Page 42)
-
-> The integrity and completeness of backup information is tested on a periodic basis.
-> (Source: SOC 2 TSC, Page 42)
-
-> The use of the system components is measured to establish a baseline for capacity management and to use when evaluating the risk of impair
-
-**Ground Truth:** The Availability criteria require that systems are available for operation and use as committed, including performance monitoring, disaster recovery, and backup procedures.
-
-**Scores:**
-- Faithfulness: `N/A`
-- Answer Relevancy: `0.7160`
-- Context Precision: `0.0000`
+- Context Precision: `0.6667`
 - Context Recall: `1.0000`
 
 ---
 
-### Question 27
+### Question 25
+**Question:** What does SOC 2 CC6.2 require for user access credentials?
+
+**AI Answer:** > CC6.2 Prior to issuing system credentials and granting system access, the entity registers and authorizes new internal and external users whose access is administered by the entity. For those users whose access is administered by the entity, user system credentials are removed when user access is no longer authorized.
+> SOC 2 TSC, Page 29
+
+**Ground Truth:** CC6.2 requires the entity to register and authorize new internal and external users before issuing system credentials and to remove credentials when user access is no longer authorized.
+
+**Scores:**
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.8131`
+- Context Precision: `1.0000`
+- Context Recall: `1.0000`
+
+---
+
+### Question 26
 **Question:** What does SOC 2 say about encryption of data at rest?
 
 **AI Answer:** > The entity uses encryption to supplement other measures used to protect data at rest, when such protections are deemed appropriate based on assessed risk.
@@ -770,7 +733,7 @@ SOC 2 TSC, Page 28
 
 ---
 
-### Question 28
+### Question 27
 **Question:** What are the SOC 2 requirements for logical access controls?
 
 **AI Answer:** > CC6.1 The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events to meet the entity's objectives.
@@ -790,13 +753,13 @@ SOC 2 TSC, Page 28
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7493`
+- Answer Relevancy: `0.7610`
 - Context Precision: `0.2786`
 - Context Recall: `1.0000`
 
 ---
 
-### Question 29
+### Question 28
 **Question:** What does SOC 2 require for change management?
 
 **AI Answer:** > CC8.1 The entity authorizes, designs, develops or acquires, configures, documents, tests, approves, and implements changes to infrastructure, data, software, and procedures to meet its objectives.
@@ -839,142 +802,120 @@ SOC 2 TSC, Page 28
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7259`
+- Answer Relevancy: `0.7306`
 - Context Precision: `0.8056`
 - Context Recall: `1.0000`
 
 ---
 
-### Question 30
-**Question:** How do NIST CSF 2.0 and ISO 27001 both address risk management?
+### Question 29
+**Question:** What does NIST CSF 2.0 say about cybersecurity supply chain risk management?
 
-**AI Answer:** > The CSF helps organizations to translate their terminology for cybersecurity and cybersecurity risk management into general risk management language that executives will understand.
-> NIST resources that describe the mutual relationship between cybersecurity risk management and ERM include: • NIST Cybersecurity Framework 2.0 – Enterprise Risk Management Quick-Start Guide
-[Source: NIST CSF 2.0, Page 16]
+**AI Answer:** > Cybersecurity SCRM (C-SCRM) is a systematic process for managing exposure to cybersecurity risk throughout supply chains and developing appropriate response strategies, policies, processes, and procedures.
+[Source: NIST CSF 2.0, Page 17]
 
-> This document also includes requirements for the assessment and treatment of information security risks tailored to the needs of the organization. The requirements set out in this document are generic and are intended to be applicable to all organizations, regardless of type, size or nature.
-[Source: ISO 27001:2022, Page 6]
+> Cyber supply chain risk management processes are identified, established, managed, monitored, and improved by organizational stakeholders
+[Source: NIST CSF 2.0, Page 21]
 
-> The information security management system preserves the confidentiality, integrity and availability of information by applying a risk management process and gives confidence to interested parties that risks are adequately managed.
-[Source: ISO 27001:2022, Page 4]
+> A cybersecurity supply chain risk management program, strategy, objectives, policies, and processes are established and agreed to by organizational stakeholders
+[Source: NIST CSF 2.0, Page 21]
 
-> The organization shall define and apply an information security risk assessment process that: a) establishes and maintains information security risk criteria that include: 1) the risk acceptance criteria; and 2) criteria for performing information security risk assessments; b) ensures that repeated information security risk assessments produce consistent, valid and comparable results; c) identifies the information security risks: 1) apply the information security risk assessment process to identify risks associated with the loss of confidentiality, integrity and availability for information within the scope of the information security management system; and 2) identify the risk owners; d) analyses the information security risks: 1) assess the potential consequences that would result if the risks identified in 6.1.2 c) 1) were to materialize;
-[Source: ISO 27001:2022, Page 9]
+> Cybersecurity roles and responsibilities for suppliers, customers, and partners are established, communicated, and coordinated internally and externally
+[Source: NIST CSF 2.0, Page 21]
 
-> e) formulate an information security risk treatment plan; and f) obtain risk owners’ approval of the i
+> Cybersecurity supply chain risk management is integrated into cybersecurity and enterprise risk management, risk assessment, and improvement processes
+[Source: NIST CSF 2.0, Page 21]
 
-**Ground Truth:** NIST CSF 2.0 addresses risk through the Govern and Identify functions while ISO 27001 requires a formal risk assessment and treatment process under clause 6.1. Both frameworks emphasize identifying analyzing and responding to information security risks.
+> Requirements to address cybersecurity risks in supply chains are established, prioritized, and integrated into contracts and other types of agreements with suppliers and other relevant third parties
+[Source: NIST CSF 2.0, Page 22]
+
+> Planning and due diligence are performed to reduce risks before entering into formal supplier or other third-party relationships
+[Source: NIST CSF 2.0, Page 22]
+
+> The risks posed by a supplier, their products and services, and other third parties are understood, recorded, prioritized, assessed, responded to, and monitored over the course of the relationship
+[Source: NIST CSF 2.0, Page 22]
+
+> Relevant suppliers and other third parties are included in incident planning, response, and recovery activities
+[Source: NIST CSF 2.0, Page 22]
+
+> Supply chain security practices are integrated into cybersecurity and enterprise risk management programs, and their performance is monitored throughout the technology product and service life cycle
+[Source: NIST CSF 2.0, Page 22]
+
+> Cyb
+
+**Ground Truth:** NIST CSF 2.0 addresses cybersecurity supply chain risk management under the Govern function (GV.SC), requiring organizations to identify, assess, and manage cybersecurity risks from suppliers and third parties throughout the product and service lifecycle.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7187`
-- Context Precision: `0.0000`
-- Context Recall: `0.6667`
+- Answer Relevancy: `0.7206`
+- Context Precision: `0.8875`
+- Context Recall: `1.0000`
+
+---
+
+### Question 30
+**Question:** What does NIST SP 800-53 control IR-4 require for incident handling?
+
+**AI Answer:** > IR-4 INCIDENT HANDLING
+> Control:
+> a. Implement an incident handling capability for incidents that is consistent with the incident
+> response plan and includes preparation, detection and analysis, containment, eradication,
+> and recovery;
+> b. Coordinate incident handling activities with contingency planning activities;
+[Source: NIST SP 800-53, Page 178]
+
+**Ground Truth:** IR-4 requires organizations to implement an incident handling capability that includes preparation, detection and analysis, containment, eradication, and recovery, and to coordinate incident handling with contingency planning activities.
+
+**Scores:**
+- Faithfulness: `1.0000`
+- Answer Relevancy: `0.7865`
+- Context Precision: `1.0000`
+- Context Recall: `1.0000`
 
 ---
 
 ### Question 31
-**Question:** How do NIST SP 800-53 and SOC 2 address cryptographic controls?
+**Question:** What does ISO 27001 clause 9.2 require for internal audit?
 
-**AI Answer:** > The entity uses encryption to supplement other measures used to protect data at rest, when such protections are deemed appropriate based on assessed risk.
-> Processes are in place to protect encryption keys during generation, storage, use, and destruction.
-> SOC 2 TSC, Page 28
+**AI Answer:** > The organization shall conduct internal audits at planned intervals to provide information on whether the information security management system:
+> a) conforms to
+> 1) the organization’s own requirements for its information security management system;
+> 2) the requirements of this document;
+> b) is effectively implemented and maintained.
+> [Source: ISO 27001:2022, Page 13]
 
-> Implement cryptographic mechanisms to conceal or randomize communication patterns unless otherwise protected by [Assignment: organization-defined alternative physical controls].
-> NIST SP 800-53, REV. 5, Page 306
+> The organization shall plan, establish, implement and maintain an audit programme(s), including the frequency, methods, responsibilities, planning requirements and reporting.
+> When establishing the internal audit programme(s), the organization shall consider the importance of the processes concerned and the results of previous audits.
+> The organization shall:
+> a) define the audit criteria and scope for each audit;
+> b) select auditors and conduct audits that ensure objectivity and the impartiality of the audit process;
+> c) ensure that the results of the audits are reported to relevant management;
+> Documented information shall be available as evidence of the implementation of the audit programme(s) and the audit results.
+> [Source: ISO 27001:2022, Page 14]
 
-> b. Implement the following types of cryptography required for each specified cryptographic use: [Assignment: organization-defined types of cryptography for each specified cryptographic use].
-> NIST SP 800-53, REV. 5, Page 335
-
-> (2) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | SYMMETRIC KEYS
-> Produce, control, and distribute symmetric cryptographic keys using [Selection: NIST FIPS-validated; NSA-approved] key management technology and processes.
-> NIST SP 800-53, REV. 5, Page 334
-
-> (3) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | ASYMMETRIC KEYS
-> Produce, control, and distribute asymmetric cryptographic keys using [Selection: NSA-approved key management technology and processes; prepositioned keying material; DoD-approved or DoD-issued Medium Assurance PKI certificates; DoD-approved or DoD-
-> NIST SP 800-53, REV. 5, Page 334
-
-> (6) CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT | PHYSICAL CONTROL OF KEYS
-> Maintain physical control of cryptographic keys when stored information is encrypted by external service providers.
-> NIST SP 800-53, REV. 5, Page 334
-
-**Ground Truth:** NIST SP 800-53 provides detailed cryptographic controls under the SC family including SC-13 for cryptographic protection and SC-12 for key management. SOC 2 TSC requires encryption to protect data at rest and processes to protect encryption keys throughout their lifecycle.
+**Ground Truth:** ISO 27001 clause 9.2 requires organizations to conduct internal audits at planned intervals to determine whether the ISMS conforms to requirements and is effectively implemented and maintained.
 
 **Scores:**
-- Faithfulness: `1.0000`
-- Answer Relevancy: `0.7569`
-- Context Precision: `0.0000`
+- Faithfulness: `0.9565`
+- Answer Relevancy: `0.7642`
+- Context Precision: `1.0000`
 - Context Recall: `1.0000`
 
 ---
 
 ### Question 32
-**Question:** What do NIST CSF 2.0 and SOC 2 have in common regarding incident response?
+**Question:** What does SOC 2 CC7.4 require for incident response?
 
-**AI Answer:** > The NIST Cybersecurity Framework (CSF) 2.0 ... RESPOND (RS): Actions regarding a detected cybersecurity incident are taken
->
-> CC7.4 The entity responds to identified security incidents by executing a defined incident-response program to understand, contain, remediate, and communicate security incidents, as appropriate.
+**AI Answer:** > CC7.4 The entity responds to identified security incidents by executing a defined incident-response program to understand, contain, remediate, and communicate security incidents, as appropriate.
+> (SOC 2 TSC, Page 34)
 
-> • Incident Management (RS.MA): Responses to detected cybersecurity incidents are managed
->
-> • Assigns Roles and Responsibilities — Roles and responsibilities for the design, implementation, maintenance, and execution of the incident response program are assigned, including the use of external resources when necessary.
-
-> o RS.MA-01: The incident response plan is executed in coordination with relevant third parties once an incident is declared
->
-> • Contains Security Incidents — Procedures are in place to contain security incidents that actively threaten entity objectives.
-
-> • Inc ident Analysis (RS.AN): Investigations are conducted to ensure effective response and support forensics and recovery activities
->
-> • Mitigates Ongoing Security Incidents — Procedures are in place to mitigate the effects of ongoing security incidents.
-
-> o RS. AN -03: Analysis is performed to establish what has taken place during an incident and the root cause of the incident
->
-> • Determines Root Cause of the Event — The root cause of the event is determined.
-
-> • Inc ident Response Reporting and Communication (RS.CO): Response activities are coordinated with internal and external stakeholders as required by laws, regulations, or policies
->
-> • Communicates Remediation Activities — Remediation activities are documented and communicated in accordance with the incident-response program.
-
-> o RS. CO -02: Internal and external stakeholders are notified of incidents
->
-> • Develops and Implements Communication Protocols for Security Incidents — Protocols for communicating security incidents and actions taken to affected parties are developed and implemented to meet the ent
-
-**Ground Truth:** NIST CSF 2.0 includes the Respond function covering incident response planning and communications. SOC 2 requires incident response procedures under the Common Criteria. Both require documented incident handling and communication processes.
-
-**Scores:**
-- Faithfulness: `N/A`
-- Answer Relevancy: `0.7670`
-- Context Precision: `0.0000`
-- Context Recall: `1.0000`
-
----
-
-### Question 33
-**Question:** How does ISO 27001 risk treatment relate to NIST SP 800-53 controls?
-
-**AI Answer:** > b) determine all controls that are necessary to implement the information security risk treatment option(s) chosen;
-> NOTE 1 Organizations can design controls as required, or identify them from any source.
-> c) compare the controls determined in 6.1.3 b) above with those in Annex A and verify that no necessary controls have been omitted;
-> NOTE 2 Annex A contains a list of possible information security controls. Users of this document are directed to Annex A to ensure that no necessary information security controls are overlooked.
-> NOTE 3 The information security controls listed in Annex A are not exhaustive and additional information security controls can be included if needed.
-> d) produce a Statement of Applicability that contains:
-> — the necessary controls (see 6.1.3 b) and c));
-> © ISO/IEC 2022 – All rights reserved
-> 4
-> SNV / licensed to 14955111 - Schweiz. Vereinigung für Qualitäts- und Management-Systeme (SQS) / S105748 / 2022-10-31_12:56 / ISO/IEC 27001:2022
-[Source: ISO 27001:2022, Page 9]
-
-> Control: Respond to findings from security and privacy assessments, monitoring, and audits in accordance with organizational risk tolerance.
-> Discussion: Organizations have many options for responding to risk including mitigating risk by implementing new controls or strengthening existing controls, accepting risk with appropriate justification or rationale, sharing or transferring risk, or avoiding risk. The risk tolerance of the
-[Source: NIST SP 800-53, Page 272]
-
-**Ground Truth:** ISO 27001 requires selecting controls to treat identified risks referencing Annex A. NIST SP 800-53 provides a comprehensive control catalog that can serve as the implementation basis for ISO 27001 Annex A controls making the two frameworks complementary.
+**Ground Truth:** CC7.4 requires the entity to respond to identified security incidents by executing a defined incident response program to understand, contain, remediate, and communicate security incidents as appropriate.
 
 **Scores:**
 - Faithfulness: `1.0000`
-- Answer Relevancy: `0.7848`
-- Context Precision: `0.0000`
-- Context Recall: `0.5000`
+- Answer Relevancy: `0.8303`
+- Context Precision: `1.0000`
+- Context Recall: `1.0000`
 
 ---
 
