@@ -94,17 +94,23 @@ async def run_agent_stream(query: str, history: list = None):
                             "ISO_IEC-270012022-ed.3.pdf": "ISO 27001:2022",
                             "trust-services-criteria.pdf": "SOC 2 TSC",
                         }
-                        captured_sources = [
-                            {
-                                "file": _filename_to_framework.get(
-                                    os.path.basename(d.metadata.get("source", "")),
-                                    os.path.basename(d.metadata.get("source", "Unknown")),
-                                ),
-                                "page": d.metadata.get("page", 0),
-                                "text": d.page_content[:400] + "...",
-                            }
-                            for d in docs
-                        ]
+                        seen = set()
+                        deduped = []
+                        for d in docs:
+                            fw = _filename_to_framework.get(
+                                os.path.basename(d.metadata.get("source", "")),
+                                os.path.basename(d.metadata.get("source", "Unknown")),
+                            )
+                            pg = d.metadata.get("page", 0)
+                            key = (fw, pg)
+                            if key not in seen:
+                                seen.add(key)
+                                deduped.append({
+                                    "file": fw,
+                                    "page": pg,
+                                    "text": d.page_content[:300] + "...",
+                                })
+                        captured_sources = deduped[:6]
 
                 # Stream only tokens produced by the generate node. Other nodes (grader,
                 # query rewriter) also emit LLM chunks, but those are internal signals

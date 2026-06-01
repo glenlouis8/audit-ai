@@ -1,0 +1,39 @@
+I rebuilt AuditAI from scratch. Here's what I learned about RAG the hard way.
+
+Six months ago I shipped v1. Basic RAG, one framework, decent metrics.
+
+Then I tried to add ISO 27001 and SOC 2.
+
+Everything broke.
+
+Retrieved chunks from 4 different frameworks mixing together. Precision tanked. The model started hallucinating citations from the wrong standard.
+
+So I scrapped the retrieval layer and built Corrective RAG (CRAG) — a LangGraph graph that verifies its own context before generating:
+
+→ Retrieve from all 4 frameworks in parallel
+→ Grade every chunk concurrently
+→ If quality fails: rewrite query, retry (up to 3x)
+→ Generate only when context passes
+
+Added semantic caching on top. Repeated queries skip the graph entirely.
+
+Final RAGAS scores across 33 adversarial questions:
+
+- Faithfulness: 96.7% ✅
+- Context Recall: 100% ✅
+- Context Precision: 79.4% ✅
+- Answer Relevancy: 77.6% ✅
+
+Biggest lesson: the graph architecture matters more than the LLM.
+
+Switched from Groq/Llama to Gemini — better grounding on dense regulatory text. But the real gains came from the retry loop, not the model swap.
+
+Now covers: NIST CSF 2.0, NIST SP 800-53, ISO 27001:2022, SOC 2 TSC.
+
+🔗 [link to live demo]
+
+---
+
+If you're building RAG systems or working in compliance/GRC — I'd love to connect. And if you've hit the same multi-source retrieval wall, drop a comment. Curious how others solved it.
+
+#AgenticAI #LangGraph #RAG #NIST #ISO27001 #SOC2 #Python #MLOps #AIEngineering
