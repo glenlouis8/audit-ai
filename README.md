@@ -50,7 +50,7 @@ Server-Sent Events via FastAPI `StreamingResponse` with NDJSON:
 | Component | Technology |
 | :--- | :--- |
 | **Orchestration** | LangGraph (stateful CRAG graph) |
-| **LLM** | `gemini-2.5-flash-lite` |
+| **LLM** | `gemini-3.5-flash` |
 | **Embeddings** | `gemini-embedding-001` |
 | **Vector DB** | Qdrant Cloud (payload-indexed per framework) |
 | **API** | FastAPI + SSE streaming |
@@ -72,6 +72,25 @@ Evaluated across 33 questions spanning all 4 frameworks + cross-framework compar
 
 > See [evals/ragas_report.md](evals/ragas_report.md) for full per-question breakdown.
 
+### ⚖️ LLM-as-Judge (cross-family validation)
+
+RAGAS uses Gemini as its internal judge — the same family that generates answers, which risks **self-preference bias** (a model grading its own family too leniently). To validate the scores independently, a second rubric-based judge grades every answer 1–5 on four axes.
+
+Two judges run the identical rubric:
+- `evals/judge.py` — Gemini judge (`gemini-2.5-flash-lite`)
+- `evals/judge_claude.py` — **cross-family** judge (`claude-sonnet-5`), a different model family from the generator
+
+| Dimension | Gemini Judge | Claude Judge (independent) |
+| :--- | :--- | :--- |
+| **Correctness** | `4.88` | `4.94` |
+| **Groundedness** | `5.00` | `4.97` |
+| **Completeness** | `4.62` | `4.88` |
+| **Relevance** | `5.00` | `5.00` |
+
+Both judges converge within ~0.25 across all dimensions — independent model families agreeing that the signal is real, not a model flattering itself. The cross-family judge originally exposed a verbosity defect (relevance `4.12`) that the same-family judge masked at `5.00`; tightening the generation prompt and upgrading the generator closed the gap.
+
+> Requires `ANTHROPIC_API_KEY` in `.env` for the cross-family judge. See [evals/judge_claude_report.md](evals/judge_claude_report.md).
+
 ---
 
 ## 📚 Knowledge Base
@@ -79,7 +98,7 @@ Evaluated across 33 questions spanning all 4 frameworks + cross-framework compar
 | Framework | Focus |
 | :--- | :--- |
 | **NIST CSF 2.0** | High-level cybersecurity framework (Identify, Protect, Detect, Respond, Recover) |
-| **NIST SP 800-53** | Detailed security & privacy controls catalog for federal systems |
+| **NIST SP 800-53** | Detailed security & privacy controls catalog for information systems and organizations |
 | **ISO 27001:2022** | International ISMS standard — risk-based approach to information security |
 | **SOC 2 TSC** | AICPA Trust Services Criteria — security, availability, confidentiality, privacy |
 
@@ -97,7 +116,11 @@ audit-ai/
 │   └── api/
 │       └── main.py          # FastAPI app, SSE streaming, source filtering
 ├── frontend/                # Next.js frontend
-├── evals/                   # RAGAS evaluation pipeline
+├── evals/                   # RAGAS + LLM-as-judge evaluation pipeline
+│   ├── collector.py         # collect answers → rag_results.json
+│   ├── evaluator.py         # RAGAS metrics → ragas_report.md
+│   ├── judge.py             # Gemini LLM-as-judge → judge_report.md
+│   └── judge_claude.py      # cross-family Claude judge → judge_claude_report.md
 ├── data/                    # PDF knowledge base (4 frameworks)
 ├── docker-compose.yml
 ├── render.yaml
@@ -116,6 +139,9 @@ Create `.env` in project root:
 GOOGLE_API_KEY=<key from https://aistudio.google.com/app/apikey>
 QDRANT_URL=<your Qdrant Cloud URL>
 QDRANT_API_KEY=<your Qdrant Cloud API key>
+
+# Optional — only for the cross-family LLM-as-judge (evals/judge_claude.py)
+ANTHROPIC_API_KEY=<key from https://console.anthropic.com>
 ```
 
 ### Install & Run
@@ -140,9 +166,13 @@ npm install && npm run dev
 
 ```bash
 uv sync --group evals
-uv run python evals/collector.py   # collect answers
-uv run python evals/evaluator.py   # run RAGAS → ragas_report.md
+uv run python evals/collector.py     # collect answers → rag_results.json
+uv run python evals/evaluator.py     # RAGAS metrics → ragas_report.md
+uv run python evals/judge.py         # Gemini LLM-as-judge → judge_report.md
+uv run python evals/judge_claude.py  # cross-family Claude judge → judge_claude_report.md
 ```
+
+> `judge_claude.py` needs `ANTHROPIC_API_KEY` in `.env`. All three scorers read the same `rag_results.json`, so run `collector.py` first, then any scorer in any order.
 
 ---
 

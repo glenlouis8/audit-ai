@@ -120,11 +120,23 @@ async def run_agent_stream(query: str, history: list = None):
                         continue
 
                     chunk = data["chunk"]
-                    content = ""
+                    raw = ""
                     if hasattr(chunk, "content"):
-                        content = chunk.content
+                        raw = chunk.content
                     elif isinstance(chunk, dict) and "content" in chunk:
-                        content = chunk["content"]
+                        raw = chunk["content"]
+
+                    # Gemini 3.x models return content as a list of typed blocks
+                    # (text + thinking-signature blocks) instead of a plain string.
+                    # Flatten to the concatenated text so we never stream a dict/list
+                    # to the client or blow up on `str += list`.
+                    if isinstance(raw, list):
+                        content = "".join(
+                            b.get("text", "") for b in raw
+                            if isinstance(b, dict) and b.get("type") == "text"
+                        )
+                    else:
+                        content = raw
 
                     if content:
                         full_answer_accumulator += content

@@ -11,7 +11,7 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 # Model names are centralised here so that swapping models only requires a single change.
 # Both the LLM and eval judge use the same model family to keep latency and cost consistent.
 EMBEDDING_MODEL = "models/gemini-embedding-001"
-LLM_MODEL = "gemini-2.5-flash-lite"
+LLM_MODEL = "gemini-3.5-flash"
 EVAL_JUDGE_MODEL = "gemini-2.5-flash-lite"
 COLLECTION_NAME = "compliance_audit"
 CACHE_COLLECTION = "semantic_cache"
