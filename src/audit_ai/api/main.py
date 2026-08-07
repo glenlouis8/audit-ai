@@ -18,10 +18,12 @@ app = FastAPI(
 
 # Wildcard CORS is intentional for this deployment: the frontend is served from a
 # separate origin and the API does not expose any authenticated user data.
+# allow_credentials must stay False here — the spec forbids combining it with a
+# wildcard origin, and no request in this app ever sends cookies/auth anyway.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -83,11 +85,12 @@ async def run_agent_stream(query: str, history: list = None):
                 kind = event["event"]
                 data = event.get("data", {})
 
-                # Capture the source documents when the retrieve node completes so they
-                # can be attached to the final response after generation finishes.
-                if kind == "on_chain_end" and event.get("name") == "retrieve":
-                    if "output" in data and data["output"]:
-                        docs = data["output"].get("documents", [])
+                # Capture the source documents right as generate starts — this is the
+                # post-grading set actually fed to the LLM, not the raw retrieve() output
+                # (grade_documents can drop irrelevant chunks before generate runs).
+                if kind == "on_chain_start" and event.get("name") == "generate":
+                    if "input" in data and data["input"]:
+                        docs = data["input"].get("documents", [])
                         _filename_to_framework = {
                             "nist_framework.pdf": "NIST CSF 2.0",
                             "NIST.SP.800-53r5.pdf": "NIST SP 800-53",
