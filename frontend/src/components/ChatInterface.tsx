@@ -201,7 +201,7 @@ export default function ChatInterface() {
                     <Server size={20} className="text-yellow-500 flex-shrink-0 animate-pulse" />
                     <p className="text-xs sm:text-sm">
                         <span className="font-bold text-yellow-400">Server Notice:</span> This demo runs on free cloud infrastructure.
-                        The first request may take <span className="font-bold text-white">45-60 seconds</span> to wake up the server. Please be patient!
+                        The server is waking up in the background and may need up to <span className="font-bold text-white">45-60 seconds</span> if it was idle. Please be patient!
                     </p>
                 </div>
             </motion.div>
