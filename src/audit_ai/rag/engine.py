@@ -418,10 +418,11 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     off-topic questions) short-circuit immediately without touching the vector store.
     The last 3 conversation turns are included so the router can correctly handle
     follow-up questions that reference prior context (e.g., "can you elaborate?").
-    When in doubt, the router defaults to 'chat' to avoid unnecessarily expensive
-    retrieval on non-compliance queries.
+    When in doubt, the router defaults to 'search': a wasted retrieval is cheaper
+    than wrongly dismissing a real compliance question as chat.
 
-    A keyword pre-filter runs first to skip the LLM call entirely for obvious greetings.
+    Two keyword fast-paths run first to skip the LLM call: obvious greetings go to
+    'chat', and explicit compliance terms go to 'search'.
     """
     query_lower = user_query.lower().strip()
 
@@ -433,16 +434,17 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
     ):
         return "chat"
 
-    # Fast path: explicit compliance terms — skip LLM router, go straight to search
+    # Fast path: framework-specific terms only — skip LLM router, go straight to search.
+    # Everyday words ("control", "risk", "policy") are left to the LLM router so
+    # off-topic questions don't trigger the full RAG pipeline.
     _SEARCH_KEYWORDS = {
         "nist", "iso 27001", "soc 2", "800-53", "csf", "isms", "tsc", "aicpa",
-        "function", "control", "framework", "compliance", "audit", "policy",
-        "govern", "identify", "protect", "detect", "respond", "recover",
-        "encrypt", "cryptograph", "access control", "incident", "risk",
-        "annex", "clause", "criteria", "certification", "safeguard",
-        "leadership", "requirement", "management system",
+        "annex a", "access control", "statement of applicability",
+        "trust services", "common criteria",
     }
-    if any(kw in query_lower for kw in _SEARCH_KEYWORDS):
+    # Leading word boundary only, so stems like "encrypt"/"safeguard" still match
+    # "encryption"/"safeguards" but "isms" no longer matches inside "organisms".
+    if any(re.search(r'\b' + re.escape(kw), query_lower) for kw in _SEARCH_KEYWORDS):
         return "search"
 
     history = history or []
