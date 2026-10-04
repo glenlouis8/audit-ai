@@ -1,4 +1,5 @@
 import os
+import re
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, List, Literal, TypedDict
@@ -190,7 +191,7 @@ def _detect_frameworks(query: str) -> List[str]:
     query_lower = query.lower()
     matched = [
         fname for fname, keywords in _FRAMEWORK_KEYWORDS.items()
-        if any(kw in query_lower for kw in keywords)
+        if any(re.search(r'\b' + re.escape(kw), query_lower) for kw in keywords)
     ]
     return matched if matched else _FRAMEWORK_FILES
 
@@ -428,7 +429,6 @@ def route_query(user_query: str, history: List[Dict[str, str]] = None) -> Litera
 
     # Fast path: obvious greetings/identity — whole-word match only to avoid
     # false positives like "hi" matching inside "leadership" or "this"
-    import re
     if len(user_query) < 60 and any(
         re.search(r'\b' + re.escape(kw) + r'\b', query_lower) for kw in _CHAT_KEYWORDS
     ):
