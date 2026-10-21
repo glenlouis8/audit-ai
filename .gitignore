@@ -64,5 +64,6 @@ coverage.xml
 *.cover
 .hypothesis/
 
-docs/
+docs/*
+!docs/images/
 INTERVIEW_RECAP.md
