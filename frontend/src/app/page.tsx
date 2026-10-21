@@ -123,7 +123,7 @@ export default function Home() {
                         <div className="w-3 h-3 rounded-full bg-green-500/50" />
                     </div>
                     <div className="ml-4 px-3 py-1 rounded bg-white/5 text-[10px] text-gray-500 font-mono w-64 text-center">
-                        https://audit-ai-frontend-pi.vercel.app/
+                        https://audit-ai-neon.vercel.app/
                     </div>
                 </div>
                 {/* UI Preview */}
